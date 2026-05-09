@@ -1,0 +1,28 @@
+# Windsurf Next 解压目录 (太大不提交)
+windsurf-next/
+windsurf-next.zip
+
+# 环境变量
+.env
+.env.*
+
+# Node
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# 逆向临时文件
+*.beautified.js
+sourcemaps/
