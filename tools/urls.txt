@@ -1,0 +1,18 @@
+﻿=== WINDSURF/CODEIUM URLs ===
+https://exafunction.retool.com/apps/b9412a18-63c8-11ef-8e93-573ca9cceee4/Supercomplete
+https://docs.windsurf.com
+https://your-company.windsurf.com
+https://docs.windsurf.com/troubleshooting/windsurf-common-issues
+https://inference.codeium.com
+https://windsurf.com
+https://eu.windsurf.com/_route/api_server
+https://eu.windsurf.com
+https://windsurf.fedstart.com/_route/api_server
+https://windsurf.fedstart.com
+https://server-staging.codeium.com
+https://codeium-staging-exafunction.vercel.app
+https://server.codeium.com
+https://register.windsurf.com
+https://unleash.codeium.com/api/
+https://cdn.windsurf.com/sourcemaps/a65d6c4e1fd335336d7a0b601099811667e184ca/extensions/windsurf/dist/extension.js.map
+=== AUTH URLs ===
