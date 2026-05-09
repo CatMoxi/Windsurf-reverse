@@ -24,15 +24,43 @@ windsurf-next/  下载的 Windsurf Next (gitignored)
 
 ## 使用方法
 
-### 1. 下载 Windsurf Next
+### 1. 运行 API 反代理
 ```bash
-# 自动下载脚本
-python tools/download_windsurf.py
+cd src
+npm install
+npm start
+# Server starts on http://localhost:3000
 ```
 
-### 2. 运行反代理 (待实现)
+### 2. 获取登录 URL
 ```bash
-# 待 Phase 4 完成后补充
+# 生成 OAuth 登录 URL (在浏览器中打开)
+curl http://localhost:3000/api/auth/login-url?show_token=true
+
+# 获取 token 后，交换为 API Key
+curl -X POST http://localhost:3000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"access_token": "YOUR_TOKEN_HERE"}'
+
+# 或使用 auth token 备用登录
+curl -X POST http://localhost:3000/api/auth/token-login \
+  -H "Content-Type: application/json" \
+  -d '{"auth_token": "YOUR_AUTH_TOKEN"}'
+```
+
+### 3. 代理 API 请求
+```bash
+# 转发 Connect-RPC 请求到 Windsurf 后端
+curl -X POST http://localhost:3000/api/proxy/exa.language_server_pb.LanguageServerService/GetProcesses \
+  -H "Content-Type: application/proto" \
+  -H "X-Api-Key: YOUR_API_KEY" \
+  --data-binary @request.bin
+```
+
+### 4. 环境变量
+```bash
+PORT=3000                              # 监听端口
+API_SERVER_URL=https://server.codeium.com  # 上游 API
 ```
 
 ## 约束

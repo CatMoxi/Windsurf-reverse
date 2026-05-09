@@ -1,0 +1,22 @@
+{
+  "name": "windsurf-api-proxy",
+  "version": "1.0.0",
+  "description": "Windsurf API reverse proxy - login and API forwarding",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "keywords": ["windsurf", "reverse-proxy", "connect-rpc"],
+  "author": "CatMoxi",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "@bufbuild/protobuf": "^2.12.0",
+    "@connectrpc/connect": "^2.1.1",
+    "@connectrpc/connect-node": "^2.1.1",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "uuid": "^14.0.0"
+  }
+}
