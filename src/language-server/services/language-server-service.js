@@ -265,13 +265,16 @@ class LanguageServerService {
   getCascadeModelConfigs(call, callback) {
     const request = call.request;
     this.log.debug('GetCascadeModelConfigs');
-    if (this.api) {
+    if (this.api && this.apiKey) {
       this.api.connect();
-      this.api.call('GetCascadeModelConfigs', request)
-        .then(response => callback(null, response))
-        .catch(err => callback(null, { model_configs: [] }));
+      const apiReq = camelToSnake(request);
+      if (!apiReq.metadata) apiReq.metadata = {};
+      apiReq.metadata.api_key = this.apiKey;
+      this.api.call('GetCascadeModelConfigs', apiReq)
+        .then(response => callback(null, snakeToCamel(response)))
+        .catch(err => callback(null, { modelConfigs: [] }));
     } else {
-      callback(null, { model_configs: [] });
+      callback(null, { modelConfigs: [] });
     }
   }
 
@@ -524,7 +527,114 @@ class LanguageServerService {
   getChatMessage(call) {
     const request = call.request;
     this.log.info('GetChatMessage: streaming chat response');
-    this._forwardStream('GetChatMessage', request, call);
+    
+    if (!this.api || !this.apiKey) {
+      this.log.warn('GetChatMessage: no API client/key, ending stream');
+      call.end();
+      return;
+    }
+    
+    // Transform LS GetChatMessageRequest → API GetChatMessageRequest
+    // LS request has: metadata, chatMessages[], activeDocument, openDocumentUris[], workspaceUris[], chatModelName
+    // API request needs: metadata, chatMessagePrompts[], chatModelName/chatModelUid, tools[], cascadeId
+    const apiReq = this._buildApiChatRequest(request);
+    
+    let ended = false;
+    const safeEnd = () => {
+      if (!ended) { ended = true; try { call.end(); } catch(e) {} }
+    };
+    
+    try {
+      this.api.connect();
+      const upstream = this.api.stream('GetChatMessage', apiReq);
+      let messageId = '';
+      let conversationId = request.conversationId || '';
+      let fullText = '';
+      
+      upstream.on('data', (chunk) => {
+        if (ended) return;
+        // API response: {message_id, delta_text, delta_tokens, stop_reason, delta_tool_calls, ...}
+        // LS response: {chatMessage: {messageId, source, action: {generic: {text}}, inProgress}, numTokensInIntent}
+        if (!messageId && chunk.message_id) messageId = chunk.message_id;
+        fullText += chunk.delta_text || '';
+        
+        const lsResponse = {
+          chatMessage: {
+            messageId: messageId || chunk.message_id || '',
+            source: 'CHAT_MESSAGE_SOURCE_AGENT',
+            conversationId,
+            inProgress: !chunk.stop_reason || chunk.stop_reason === 'STOP_REASON_UNSPECIFIED',
+            action: {
+              generic: { text: fullText },
+              numTokens: chunk.delta_tokens || 0,
+            },
+          },
+          numTokensInIntent: 0,
+        };
+        
+        // Include tool calls if present
+        if (chunk.delta_tool_calls && chunk.delta_tool_calls.length > 0) {
+          lsResponse.chatMessage.action.generic = undefined;
+          // Tool calls are streamed as deltas
+        }
+        
+        try { call.write(lsResponse); } catch (e) {}
+      });
+      
+      upstream.on('end', () => safeEnd());
+      upstream.on('error', (err) => {
+        this.log.error(`GetChatMessage stream error: ${err.message}`);
+        safeEnd();
+      });
+      
+      call.on('cancelled', () => {
+        ended = true;
+        try { upstream.cancel(); } catch (e) {}
+      });
+    } catch (err) {
+      this.log.error(`GetChatMessage forward error: ${err.message}`);
+      safeEnd();
+    }
+  }
+  
+  /**
+   * Build API server GetChatMessage request from LS request.
+   * Transforms chat_pb format to api_server_pb format.
+   */
+  _buildApiChatRequest(request) {
+    // Convert chatMessages to chatMessagePrompts
+    const chatMessagePrompts = [];
+    const chatMessages = request.chatMessages || request.chat_messages || [];
+    
+    for (const msg of chatMessages) {
+      const prompt = {
+        message_id: msg.messageId || msg.message_id || '',
+        source: msg.source || 'CHAT_MESSAGE_SOURCE_USER',
+      };
+      
+      // Extract text content from ChatMessage
+      if (msg.action?.generic?.text) {
+        prompt.prompt = msg.action.generic.text;
+      } else if (msg.intent?.text) {
+        prompt.prompt = msg.intent.text;
+      } else if (msg.content) {
+        prompt.prompt = typeof msg.content === 'string' ? msg.content : '';
+      }
+      
+      // Tool calls
+      if (msg.action?.generic?.toolCalls || msg.action?.generic?.tool_calls) {
+        prompt.tool_calls = msg.action.generic.toolCalls || msg.action.generic.tool_calls;
+      }
+      
+      chatMessagePrompts.push(prompt);
+    }
+    
+    return {
+      metadata: { api_key: this.apiKey },
+      chat_message_prompts: chatMessagePrompts,
+      chat_model_name: request.chatModelName || request.chat_model_name || '',
+      chat_model_uid: request.chatModelUid || request.chat_model_uid || '',
+    };
   }
 
   /** Server-streaming: RawGetChatMessage */
@@ -1646,23 +1756,31 @@ class LanguageServerService {
    * Pipes the upstream stream directly back to the client.
    */
   _forwardStream(method, request, call) {
-    if (!this.api) {
-      this.log.warn(`${method}: no API client, ending stream`);
+    if (!this.api || !this.apiKey) {
+      this.log.warn(`${method}: no API client/key, ending stream`);
       call.end();
       return;
     }
 
     let ended = false;
     const safeEnd = () => {
-      if (!ended) { ended = true; call.end(); }
+      if (!ended) { ended = true; try { call.end(); } catch(e) {} }
     };
 
     try {
       this.api.connect();
-      const upstream = this.api.stream(method, request);
+      // Convert camelCase request to snake_case for gRPC proto-loader
+      const apiReq = camelToSnake(request);
+      if (!apiReq.metadata) apiReq.metadata = {};
+      apiReq.metadata.api_key = this.apiKey;
+      
+      const upstream = this.api.stream(method, apiReq);
       
       upstream.on('data', (chunk) => {
-        if (!ended) { try { call.write(chunk); } catch (e) {} }
+        if (!ended) {
+          // Convert snake_case response chunk to camelCase for proto-codec encoding
+          try { call.write(snakeToCamel(chunk)); } catch (e) {}
+        }
       });
       
       upstream.on('end', () => safeEnd());
@@ -1687,14 +1805,19 @@ class LanguageServerService {
    * Forward a unary call to the API server
    */
   _forwardUnary(method, request, callback) {
-    if (!this.api) {
+    if (!this.api || !this.apiKey) {
       callback(null, {});
       return;
     }
 
     this.api.connect();
-    this.api.call(method, request)
-      .then(response => callback(null, response))
+    // Convert camelCase request to snake_case, inject API key
+    const apiReq = camelToSnake(request);
+    if (!apiReq.metadata) apiReq.metadata = {};
+    apiReq.metadata.api_key = this.apiKey;
+    
+    this.api.call(method, apiReq)
+      .then(response => callback(null, snakeToCamel(response)))
       .catch(err => {
         this.log.error(`${method} error: ${err.message}`);
         callback(null, {});
