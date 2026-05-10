@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package pb;
+
+import "google/protobuf/descriptor.proto";
+
+message CppFeatures {
+  enum StringType {
+    STRING_TYPE_UNKNOWN = 0;
+    VIEW = 1;
+    CORD = 2;
+    STRING = 3;
+  }
+
+  bool legacy_closed_enum = 1;
+  pb.CppFeatures.StringType string_type = 2;
+  bool enum_name_uses_string_view = 3;
+}
+
