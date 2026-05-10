@@ -775,10 +775,10 @@ class LanguageServerService {
 
   /** Unary: Exit */
   exit(call, callback) {
-    const request = call.request;
-    this.log.debug('Exit called');
-    // TODO: Implement - forward to API server or handle locally
+    this.log.info('Exit called - shutting down gracefully');
     callback(null, {});
+    // Give time for the response to be sent, then exit
+    setTimeout(() => process.exit(0), 500);
   }
 
   /** Unary: ResetOnboarding */
