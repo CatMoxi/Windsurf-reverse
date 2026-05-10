@@ -75,6 +75,12 @@ if (args.extension_server_port) {
   });
 }
 
+const SeatManagementClient = require('./clients/seat-management-client');
+const seatMgmtClient = new SeatManagementClient({
+  baseUrl: args.register_api_server_url || 'https://register.windsurf.com',
+  logger,
+});
+
 // Create gRPC server
 const server = new grpc.Server({
   'grpc.max_receive_message_length': 100 * 1024 * 1024,
@@ -83,7 +89,7 @@ const server = new grpc.Server({
 
 // Register LanguageServerService with middleware
 const lsService = languageServerProto.exa.language_server_pb.LanguageServerService.service;
-const handlers = new LanguageServerHandlers({ apiClient, extensionClient, logger, args });
+const handlers = new LanguageServerHandlers({ apiClient, extensionClient, seatMgmtClient, logger, args });
 const rawHandlers = handlers.getHandlers();
 const wrappedHandlers = wrapWithMiddleware(rawHandlers, {
   logger,

@@ -10,9 +10,10 @@ const CascadeEngine = require('../core/cascade-engine');
  * and calls back to ExtensionServerService for IDE operations.
  */
 class LanguageServerService {
-  constructor({ apiClient, extensionClient, logger, args }) {
+  constructor({ apiClient, extensionClient, seatMgmtClient, logger, args }) {
     this.api = apiClient;
     this.ext = extensionClient;
+    this.seatMgmt = seatMgmtClient;
     this.log = logger;
     this.args = args;
     
@@ -204,17 +205,25 @@ class LanguageServerService {
   /** Unary: GetCompletions */
   getCompletions(call, callback) {
     const request = call.request;
-    this.log.debug(`GetCompletions: file=${request.document?.editor_language}`);
-    if (this.api) {
+    const lang = request.document?.editorLanguage || request.document?.editor_language || '';
+    this.log.debug(`GetCompletions: lang=${lang}`);
+    if (this.api && this.apiKey) {
       this.api.connect();
-      this.api.call('GetCompletions', request)
-        .then(response => callback(null, response))
+      // Ensure metadata has api_key for the gRPC call
+      const apiReq = camelToSnake(request);
+      if (!apiReq.metadata) apiReq.metadata = {};
+      apiReq.metadata.api_key = this.apiKey;
+      this.api.call('GetCompletions', apiReq)
+        .then(response => {
+          // Convert snake_case response to camelCase for proto-codec encoding
+          callback(null, snakeToCamel(response));
+        })
         .catch(err => {
           this.log.error(`GetCompletions failed: ${err.message}`);
-          callback(null, { completion_items: [] });
+          callback(null, { completionItems: [] });
         });
     } else {
-      callback(null, { completion_items: [] });
+      callback(null, { completionItems: [] });
     }
   }
 
@@ -667,42 +676,26 @@ class LanguageServerService {
     const request = call.request;
     this.log.debug('GetUserStatus called');
     
-    // GetUserStatus is handled locally by the LS using cached user info.
-    // The real LS calls GetUser on the API server at startup and caches the result.
-    // Here we forward to API server's GetUser to get fresh data.
-    if (this.api && this.api.apiKey) {
-      this.api.connect();
-      this.api.call('GetUser', { metadata: request.metadata || {} })
-        .then(response => {
-          // Map API server GetUser response to GetUserStatus format (camelCase for protobufjs)
-          const userStatus = {
-            pro: response.user_status?.pro || false,
-            disableTelemetry: response.user_status?.disable_telemetry || false,
-            name: response.user_status?.name || '',
-            teamId: response.user_status?.team_id || '',
-            email: response.user_status?.email || '',
-            teamStatus: response.user_status?.team_status || 0,
-            userFeatures: response.user_status?.user_features || [],
-            teamsFeatures: response.user_status?.teams_features || [],
-            teamsTier: response.user_status?.teams_tier || 0,
-            permissions: response.user_status?.permissions || [],
-            planStatus: response.user_status?.plan_status || 0,
-          };
-          const planInfo = {
-            planName: response.plan_info?.plan_name || '',
-            teamsTier: response.plan_info?.teams_tier || 0,
-            hasAutocompleteForMode: response.plan_info?.has_autocomplete_fast_mode || false,
-            maxNumPremiumChatMessages: response.plan_info?.max_num_premium_chat_messages || 0,
-          };
-          this.log.info(`GetUserStatus: name=${userStatus.name}, pro=${userStatus.pro}`);
-          callback(null, { userStatus, planInfo });
+    // GetUserStatus: The real LS calls SeatManagementService.GetUserStatus
+    // on register.windsurf.com with the user's API key in metadata.
+    // The response contains UserStatus and PlanInfo which the LS caches.
+    if (this.seatMgmt && this.apiKey) {
+      const codec = require('../proto-codec');
+      const reqBody = codec.encodeRequest('GetUserStatus', {
+        metadata: { apiKey: this.apiKey },
+      });
+      this.seatMgmt.callRaw('GetUserStatus', reqBody)
+        .then(resBody => {
+          const decoded = codec.decodeResponse('GetUserStatus', resBody);
+          this.log.info(`GetUserStatus: name=${decoded.userStatus?.name}, pro=${decoded.userStatus?.pro}`);
+          callback(null, decoded);
         })
         .catch(err => {
-          this.log.warn(`GetUserStatus API error: ${err.message}, returning defaults`);
+          this.log.warn(`GetUserStatus SeatMgmt error: ${err.message}, returning defaults`);
           callback(null, { userStatus: { pro: false }, planInfo: {} });
         });
     } else {
-      // No API client — return minimal valid response
+      // No SeatManagement client — return minimal valid response
       callback(null, { userStatus: { pro: false }, planInfo: {} });
     }
   }
@@ -712,16 +705,19 @@ class LanguageServerService {
     const request = call.request;
     this.log.debug('GetProfileData called');
     
-    // GetProfileData returns the user's profile picture URL.
-    // Forward to API server.
-    if (this.api) {
-      this.api.connect();
-      this.api.call('GetProfileData', { api_key: request.apiKey || this.api.apiKey || '' })
-        .then(response => {
-          callback(null, { profilePictureUrl: response.profile_picture_url || '' });
+    // GetProfileData: Forward to SeatManagementService on register.windsurf.com
+    if (this.seatMgmt && this.apiKey) {
+      const codec = require('../proto-codec');
+      const reqBody = codec.encodeRequest('GetProfileData', {
+        apiKey: request.apiKey || this.apiKey,
+      });
+      this.seatMgmt.callRaw('GetProfileData', reqBody)
+        .then(resBody => {
+          const decoded = codec.decodeResponse('GetProfileData', resBody);
+          callback(null, decoded);
         })
         .catch(err => {
-          this.log.warn(`GetProfileData API error: ${err.message}`);
+          this.log.warn(`GetProfileData SeatMgmt error: ${err.message}`);
           callback(null, { profilePictureUrl: '' });
         });
     } else {
@@ -1707,3 +1703,32 @@ class LanguageServerService {
 }
 
 module.exports = LanguageServerService;
+
+// === Case conversion utilities ===
+// protobufjs uses camelCase, @grpc/proto-loader with keepCase uses snake_case
+
+function camelToSnake(obj, depth = 0) {
+  if (depth > 15 || obj === null || obj === undefined) return obj;
+  if (Buffer.isBuffer(obj)) return obj;
+  if (Array.isArray(obj)) return obj.map(v => camelToSnake(v, depth + 1));
+  if (typeof obj !== 'object') return obj;
+  const result = {};
+  for (const [k, v] of Object.entries(obj)) {
+    const snakeKey = k.replace(/[A-Z]/g, m => '_' + m.toLowerCase());
+    result[snakeKey] = camelToSnake(v, depth + 1);
+  }
+  return result;
+}
+
+function snakeToCamel(obj, depth = 0) {
+  if (depth > 15 || obj === null || obj === undefined) return obj;
+  if (Buffer.isBuffer(obj)) return obj;
+  if (Array.isArray(obj)) return obj.map(v => snakeToCamel(v, depth + 1));
+  if (typeof obj !== 'object') return obj;
+  const result = {};
+  for (const [k, v] of Object.entries(obj)) {
+    const camelKey = k.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+    result[camelKey] = snakeToCamel(v, depth + 1);
+  }
+  return result;
+}
