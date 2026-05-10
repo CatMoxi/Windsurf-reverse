@@ -16,27 +16,33 @@
 ## 项目结构
 
 ```
-docs/                      逆向分析文档
-  protos/                  61 个完整 .proto 文件（从 Go 二进制提取）
-  architecture.md          完整架构分析
-  auth-protocol.md         登录协议文档
-  api-endpoints.md         API 端点文档
+Windsurf-Reverse/
+docs/                        逆向分析文档
+  protos/                    61 个完整 .proto 文件（从 Go 二进制提取）
+  architecture.md            完整架构分析
+  auth-protocol.md           登录协议文档
+  api-endpoints.md           API 端点文档
+  ls-launch-protocol.md      ★ LS 启动协议（CLI 参数/stdin/CSRF/命名管道）
+  cascade-tools.md           Cascade 37 种工具步骤文档
 src/
-  index.js                 API 反代理服务器（Connect-RPC）
-  auth.js                  OAuth + RegisterUser 认证模块
-  proxy.js                 请求转发模块
-  language-server/         ★ 完整 language_server 复刻
-    index.js               gRPC 服务器入口
-    services/              172 RPC 方法实现
-    clients/               API Server + Extension Server 客户端
-    core/                  Cascade 引擎 + 中间件
-    interceptor.js         gRPC 流量拦截代理
-    proto-decoder.js       Proto 解码器（512 methods）
-    protos/                完整 proto 目录结构
-tools/                     逆向辅助工具/脚本
-  extract-proto-final.js   Proto 二进制提取器
-  proto-descriptors-full.json  结构化描述符数据
-windsurf-next/             下载的 Windsurf Next (gitignored)
+  index.js                   API 反代理服务器（Connect-RPC）
+  auth.js                    OAuth + RegisterUser 认证模块
+  proxy.js                   请求转发模块
+  language-server/           ★ 完整 language_server 复刻
+    index.js                 双模式入口（Connect-RPC + gRPC）
+    connect-server.js        Connect-RPC HTTP/1.1 服务器
+    services/                172 RPC 方法实现
+    clients/                 API / Extension / SeatManagement 客户端
+    core/                    Cascade 引擎 + 中间件 + 工具执行器
+    interceptor.js           gRPC 流量拦截代理
+    proto-decoder.js         Proto 解码器（512 methods）
+    protos/                  完整 proto 目录结构
+tools/                       逆向辅助工具/脚本
+  auth-cli.js                ★ 独立认证 CLI（login/register/status）
+  e2e-test.js                ★ 端到端测试套件（9 tests）
+  extract-proto-final.js     Proto 二进制提取器
+  analyze-capture.js         流量捕获分析工具
+windsurf-next/               下载的 Windsurf Next (gitignored)
 ```
 
 ## 使用方法
@@ -78,21 +84,47 @@ curl -X POST http://localhost:3000/api/proxy/exa.language_server_pb.LanguageServ
 ```bash
 cd src/language-server
 npm install
-node index.js --port 50051 --api_server_url https://server.codeium.com --api_key YOUR_KEY
+
+# Connect-RPC 模式（真实 extension 兼容）
+node index.js --connect_mode --run_child --csrf_token YOUR_TOKEN \
+  --api_server_url https://server.codeium.com --api_key YOUR_KEY
+
+# 标准 gRPC 模式（测试用）
+node index.js --port 50051 --api_key YOUR_KEY
 ```
 
-### 5. 拦截真实流量
+### 5. 独立认证工具
 ```bash
-# 启动拦截代理（需要知道真实 LS 端口）
+# 生成 OAuth 登录 URL
+node tools/auth-cli.js login --show-token
+
+# 用 token 换取 API key
+node tools/auth-cli.js register YOUR_ACCESS_TOKEN
+
+# 查看已保存的凭据
+node tools/auth-cli.js status
+```
+
+### 6. 运行端到端测试
+```bash
+# 完整 E2E 测试（自动启动 LS + 9 项测试）
+node tools/e2e-test.js
+
+# 带 API key 测试（验证真实 API 转发）
+node tools/e2e-test.js --api-key YOUR_KEY
+```
+
+### 7. 拦截真实流量
+```bash
 cd src/language-server
 node interceptor.js --target-port 42100 --listen-port 3100 --verbose
-# 然后配置 extension 连接到 3100 端口
 ```
 
-### 6. 环境变量
+### 8. 环境变量
 ```bash
 PORT=3000                              # 反代理监听端口
 API_SERVER_URL=https://server.codeium.com  # 上游 API
+WINDSURF_CSRF_TOKEN=xxx                # CSRF token
 ```
 
 ## 逆向成果
@@ -102,7 +134,9 @@ API_SERVER_URL=https://server.codeium.com  # 上游 API
 | Extension.js | 6 Services, 383 RPCs, 1736 Messages, 226 Enums |
 | Language Server 二进制 | 20 Services, 646 RPCs, 2746 Messages, 287 Enums |
 | 完整 Proto 还原 | 61 .proto 文件, 651KB |
-| Language Server 复刻 | 172 RPC handlers, 全部可用 |
+| Language Server 复刻 | 172 RPC handlers, Connect-RPC + gRPC 双模式 |
+| 启动协议 | 完整 CLI 参数、stdin metadata、CSRF、命名管道 |
+| 端到端测试 | 9 tests all passing (CSRF/unary/streaming) |
 
 ## 约束
 
