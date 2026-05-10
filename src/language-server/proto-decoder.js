@@ -108,6 +108,62 @@ function decodeResponse(methodName, body) {
 }
 
 /**
+ * Encode a response object to protobuf binary
+ * @param {string} methodName - RPC method name
+ * @param {object} responseObj - Response data to encode
+ * @returns {Buffer} Encoded protobuf binary
+ */
+function encodeResponse(methodName, responseObj) {
+  const methodInfo = serviceMethodMap[methodName];
+  if (!methodInfo) {
+    return Buffer.alloc(0);
+  }
+  
+  try {
+    const ResponseType = methodInfo.responseType;
+    // proto-loader types have a static encode method via protobufjs
+    if (ResponseType.encode) {
+      const msg = ResponseType.fromObject ? ResponseType.fromObject(responseObj) : responseObj;
+      return Buffer.from(ResponseType.encode(msg).finish());
+    }
+    // Fallback: try serialize method from grpc proto-loader
+    if (ResponseType.serialize) {
+      return ResponseType.serialize(responseObj);
+    }
+    return Buffer.alloc(0);
+  } catch (e) {
+    return Buffer.alloc(0);
+  }
+}
+
+/**
+ * Encode a request object to protobuf binary
+ * @param {string} methodName - RPC method name
+ * @param {object} requestObj - Request data to encode
+ * @returns {Buffer} Encoded protobuf binary
+ */
+function encodeRequest(methodName, requestObj) {
+  const methodInfo = serviceMethodMap[methodName];
+  if (!methodInfo) {
+    return Buffer.alloc(0);
+  }
+  
+  try {
+    const RequestType = methodInfo.requestType;
+    if (RequestType.encode) {
+      const msg = RequestType.fromObject ? RequestType.fromObject(requestObj) : requestObj;
+      return Buffer.from(RequestType.encode(msg).finish());
+    }
+    if (RequestType.serialize) {
+      return RequestType.serialize(requestObj);
+    }
+    return Buffer.alloc(0);
+  } catch (e) {
+    return Buffer.alloc(0);
+  }
+}
+
+/**
  * Get method info
  */
 function getMethodInfo(methodName) {
@@ -145,6 +201,8 @@ function sanitizeForJson(obj, depth = 0) {
 module.exports = {
   decodeRequest,
   decodeResponse,
+  encodeRequest,
+  encodeResponse,
   getMethodInfo,
   listMethods,
   serviceMethodMap,

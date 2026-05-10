@@ -25,6 +25,15 @@
 const http = require('http');
 const path = require('path');
 
+// Lazy-loaded proto codec (avoids circular deps)
+let codec = null;
+function getCodec() {
+  if (!codec) {
+    try { codec = require('./proto-codec'); } catch (e) { codec = null; }
+  }
+  return codec;
+}
+
 /**
  * Create a Connect-RPC HTTP/1.1 server
  * 
@@ -94,15 +103,26 @@ function createConnectServer({ csrfToken, handlers, logger, protoDecoder }) {
     req.on('end', () => {
       const body = Buffer.concat(chunks);
       
-      // Decode request if proto decoder available
+      // Decode request body from protobuf binary
       let request = {};
-      if (protoDecoder && isBinary && body.length > 0) {
-        try {
-          request = protoDecoder.decodeRequest(methodName, body);
-        } catch (e) {
+      if (isBinary && body.length > 0) {
+        const c = getCodec();
+        if (c) {
+          try {
+            request = c.decodeRequest(methodName, body);
+          } catch (e) {
+            request = { _raw: body };
+          }
+        } else if (protoDecoder) {
+          try {
+            request = protoDecoder.decodeRequest(methodName, body);
+          } catch (e) {
+            request = { _raw: body };
+          }
+        } else {
           request = { _raw: body };
         }
-      } else {
+      } else if (body.length > 0) {
         request = { _raw: body };
       }
       
@@ -143,10 +163,12 @@ function handleUnaryRequest(req, res, methodName, request, handler, logger, star
       return;
     }
     
-    // For now, respond with empty proto (the real implementation would 
-    // serialize the response to protobuf binary)
-    // TODO: Use proto encoder to serialize response
-    const responseBody = Buffer.alloc(0);
+    // Encode response object to protobuf binary
+    let responseBody = Buffer.alloc(0);
+    const c = getCodec();
+    if (c && response) {
+      responseBody = c.encodeResponse(methodName, response);
+    }
     
     res.writeHead(200, {
       'Content-Type': 'application/proto',
@@ -186,9 +208,16 @@ function handleStreamingRequest(req, res, methodName, request, handler, logger) 
     getPeer: () => req.socket.remoteAddress || 'unknown',
     write(message) {
       if (ended) return;
-      // Encode as Connect-RPC streaming frame
-      // For now, write empty frames (TODO: serialize message to proto binary)
-      const payload = Buffer.alloc(0);
+      // Encode response message as protobuf binary, then wrap in streaming frame
+      let payload = Buffer.alloc(0);
+      if (message && typeof message === 'object') {
+        const c = getCodec();
+        if (c) {
+          payload = c.encodeResponse(methodName, message);
+        }
+      } else if (Buffer.isBuffer(message)) {
+        payload = message;
+      }
       const frame = encodeStreamFrame(0, payload);
       try { res.write(frame); } catch (e) {}
     },

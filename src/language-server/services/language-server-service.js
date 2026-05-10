@@ -674,32 +674,36 @@ class LanguageServerService {
       this.api.connect();
       this.api.call('GetUser', { metadata: request.metadata || {} })
         .then(response => {
-          // Map API server GetUser response to GetUserStatus format
+          // Map API server GetUser response to GetUserStatus format (camelCase for protobufjs)
           const userStatus = {
             pro: response.user_status?.pro || false,
-            disable_telemetry: response.user_status?.disable_telemetry || false,
+            disableTelemetry: response.user_status?.disable_telemetry || false,
             name: response.user_status?.name || '',
-            team_id: response.user_status?.team_id || '',
+            teamId: response.user_status?.team_id || '',
             email: response.user_status?.email || '',
-            team_status: response.user_status?.team_status || 0,
-            user_features: response.user_status?.user_features || [],
-            teams_features: response.user_status?.teams_features || [],
-            teams_tier: response.user_status?.teams_tier || 0,
+            teamStatus: response.user_status?.team_status || 0,
+            userFeatures: response.user_status?.user_features || [],
+            teamsFeatures: response.user_status?.teams_features || [],
+            teamsTier: response.user_status?.teams_tier || 0,
             permissions: response.user_status?.permissions || [],
-            plan_status: response.user_status?.plan_status || 0,
+            planStatus: response.user_status?.plan_status || 0,
           };
-          const planInfo = response.plan_info || {};
+          const planInfo = {
+            planName: response.plan_info?.plan_name || '',
+            teamsTier: response.plan_info?.teams_tier || 0,
+            hasAutocompleteForMode: response.plan_info?.has_autocomplete_fast_mode || false,
+            maxNumPremiumChatMessages: response.plan_info?.max_num_premium_chat_messages || 0,
+          };
           this.log.info(`GetUserStatus: name=${userStatus.name}, pro=${userStatus.pro}`);
-          callback(null, { user_status: userStatus, plan_info: planInfo });
+          callback(null, { userStatus, planInfo });
         })
         .catch(err => {
-          this.log.warn(`GetUserStatus API error: ${err.message}, returning empty`);
-          // Fallback: return empty status (extension handles gracefully)
-          callback(null, { user_status: {}, plan_info: {} });
+          this.log.warn(`GetUserStatus API error: ${err.message}, returning defaults`);
+          callback(null, { userStatus: { pro: false }, planInfo: {} });
         });
     } else {
-      // No API client — return minimal response
-      callback(null, { user_status: {}, plan_info: {} });
+      // No API client — return minimal valid response
+      callback(null, { userStatus: { pro: false }, planInfo: {} });
     }
   }
 
@@ -712,16 +716,16 @@ class LanguageServerService {
     // Forward to API server.
     if (this.api) {
       this.api.connect();
-      this.api.call('GetProfileData', { api_key: request.api_key || this.api.apiKey || '' })
+      this.api.call('GetProfileData', { api_key: request.apiKey || this.api.apiKey || '' })
         .then(response => {
-          callback(null, { profile_picture_url: response.profile_picture_url || '' });
+          callback(null, { profilePictureUrl: response.profile_picture_url || '' });
         })
         .catch(err => {
           this.log.warn(`GetProfileData API error: ${err.message}`);
-          callback(null, { profile_picture_url: '' });
+          callback(null, { profilePictureUrl: '' });
         });
     } else {
-      callback(null, { profile_picture_url: '' });
+      callback(null, { profilePictureUrl: '' });
     }
   }
 
