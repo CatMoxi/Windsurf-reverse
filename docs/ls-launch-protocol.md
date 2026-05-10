@@ -145,3 +145,25 @@ After receiving the LanguageServerStarted callback:
 ```
 
 The hash `9c0694567290725d9dcba14ade58e297` appears to be a fixed identifier (possibly MD5 of some constant).
+
+## Server URLs
+
+| Setting Key | Default Value | Purpose |
+|---|---|---|
+| `codeium.apiServerUrl` | `https://server.codeium.com` | Main API server (completions, chat, etc.) |
+| `codeium.registerApiServerUrl` | `https://register.windsurf.com` | SeatManagementService (auth) |
+| `codeium.inferenceApiServerUrl` | `https://inference.codeium.com` | Model inference endpoint |
+| EU region API | `https://eu.windsurf.com/_route/api_server` | EU routing proxy |
+
+## Dev Mode Overrides
+
+```
+codeiumDev.externalLanguageServerAddress   # Connect to external LS instead of spawning
+codeiumDev.externalLanguageServerLspPort   # External LSP port
+codeiumDev.languageServerBinaryPath        # Custom binary path
+```
+
+Also, in dev mode: `~/.windsurf-dev/credentials.json` can be used for auth:
+```json
+{ "apiKey": "...", "name": "dev" }
+```
