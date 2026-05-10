@@ -241,25 +241,52 @@ async function getCurrentUser(auth) {
 }
 
 /**
- * Parse GetCurrentUser response recursively to find api_key and email
+ * Parse GetCurrentUser response to extract api_key and email.
+ * 
+ * Response structure (from avw reverse engineering):
+ *   field 1 (submessage) = User {
+ *     field 1 (string) = api_key
+ *     field 2 (string) = name
+ *     field 3 (string) = email
+ *     field 6 (string) = user_id
+ *     field 7 (string) = team_id
+ *   }
+ *   field 2 (submessage) = Team { plan info }
+ *   field 7 (submessage) = UserRole
  */
 function extractUserInfo(data) {
-  const result = { apiKey: '', email: '', name: '', planName: '', raw: {} };
+  const result = { apiKey: '', email: '', name: '', userId: '', teamId: '', planName: '', raw: {} };
   
-  const fields = parseProtoFields(data);
-  result.raw = simplifyFields(fields);
+  const topFields = parseProtoFields(data);
+  result.raw = simplifyFields(topFields);
   
-  // Walk through all nested string fields looking for api_key pattern and email
-  const allStrings = collectAllStrings(data);
+  // field 1 = User submessage
+  if (topFields[1] && topFields[1][0] && topFields[1][0].raw) {
+    const userFields = parseProtoFields(topFields[1][0].raw);
+    // string_1 = api_key
+    if (userFields[1] && userFields[1][0]) result.apiKey = userFields[1][0].str || '';
+    // string_2 = name
+    if (userFields[2] && userFields[2][0]) result.name = userFields[2][0].str || '';
+    // string_3 = email
+    if (userFields[3] && userFields[3][0]) result.email = userFields[3][0].str || '';
+    // string_6 = user_id
+    if (userFields[6] && userFields[6][0]) result.userId = userFields[6][0].str || '';
+    // string_7 = team_id
+    if (userFields[7] && userFields[7][0]) result.teamId = userFields[7][0].str || '';
+  }
   
-  for (const s of allStrings) {
-    // API keys are typically UUIDs or long hex strings
-    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s)) {
-      if (!result.apiKey) result.apiKey = s;
-    }
-    // Email detection
-    if (/@/.test(s) && /\.\w{2,}$/.test(s) && !result.email) {
-      result.email = s;
+  // field 2 = Team submessage (plan info)
+  if (topFields[2] && topFields[2][0] && topFields[2][0].raw) {
+    const teamFields = parseProtoFields(topFields[2][0].raw);
+    // Look for plan_name in string fields 2-7
+    for (let i = 2; i <= 7; i++) {
+      if (teamFields[i] && teamFields[i][0] && teamFields[i][0].str) {
+        const s = teamFields[i][0].str;
+        if (s && !s.includes('@') && s.length < 50) {
+          result.planName = s;
+          break;
+        }
+      }
     }
   }
   
@@ -329,6 +356,8 @@ async function loginWithAuth1(auth1Token, orgId) {
   
   console.log(`    api_key: ${user.apiKey || '(not found)'}`);
   console.log(`    email: ${user.email || '(not found)'}`);
+  if (user.name) console.log(`    name: ${user.name}`);
+  if (user.planName) console.log(`    plan: ${user.planName}`);
   
   return {
     auth1Token: postAuth.auth1Token || auth1Token,
@@ -337,6 +366,8 @@ async function loginWithAuth1(auth1Token, orgId) {
     primaryOrgId: postAuth.primaryOrgId,
     apiKey: user.apiKey,
     email: user.email,
+    name: user.name,
+    planName: user.planName,
     raw: user.raw,
   };
 }
