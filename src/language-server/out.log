@@ -1,0 +1,17 @@
+[10:26:45.230] info: Windsurf Language Server (reverse-engineered)
+[10:26:45.237] info: API Server: https://server.codeium.com
+[10:26:45.239] info: Extension Server Port: not set
+[10:26:46.362] info: Registered 172 RPC handlers (middleware: logging)
+[10:26:46.375] info: Connect-RPC server listening on 127.0.0.1:54884 (HTTP/1.1, proto binary)
+[10:26:46.376] info: CSRF token validation: enabled
+Server listening on port 54884
+[10:27:03.837] info: StartCascade: type=undefined source=undefined
+[10:27:03.842] info: Cascade started: 350e5893-f16f-49bf-ba71-c7cace436ffd
+[10:27:04.217] info: ApiServerClient connected to server.codeium.com:443
+[10:27:05.499] error: API.GetCompletions error: 3 INVALID_ARGUMENT: an internal error occurred
+[10:27:05.500] error: GetCompletions failed: 3 INVALID_ARGUMENT: an internal error occurred
+[10:27:05.801] error: API.GetCascadeModelConfigs error: 3 INVALID_ARGUMENT: an internal error occurred
+[10:27:05.806] warn: CSRF validation failed from 127.0.0.1
+[10:27:05.810] info: GetChatMessage: streaming chat response
+[10:27:05.818] error: GetChatMessage stream error: 1 CANCELLED: Cancelled on client
+[10:32:25.032] info: Shutting down...

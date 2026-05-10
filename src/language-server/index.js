@@ -93,33 +93,82 @@ server.addService(lsService, wrappedHandlers);
 logger.info(`Registered ${Object.keys(rawHandlers).length} RPC handlers (middleware: logging${args.log_payloads ? '+payloads' : ''})`);
 
 // Start server
-const port = args.port || 0; // 0 = random port (like original)
-server.bindAsync(
-  `127.0.0.1:${port}`,
-  grpc.ServerCredentials.createInsecure(),
-  (err, boundPort) => {
-    if (err) {
-      logger.error(`Failed to bind: ${err.message}`);
-      process.exit(1);
+// The real LS serves Connect-RPC (HTTP/1.1 + proto binary) for extension,
+// and uses standard gRPC (HTTP/2) as CLIENT to server.codeium.com.
+// We support both: --connect-mode uses Connect-RPC, default uses gRPC.
+const port = args.port || args.server_port || 0;
+const useConnect = args.connect_mode || args.run_child; // run_child = real LS mode
+
+if (useConnect) {
+  // Connect-RPC mode (HTTP/1.1) - what the real extension expects
+  const { createConnectServer, streaming } = require('./connect-server');
+  
+  // Mark streaming handlers
+  const STREAMING_METHODS = [
+    'HandleStreamingCommand', 'HandleStreamingTab', 'HandleStreamingTerminalCommand',
+    'GetChatMessage', 'RawGetChatMessage', 'GetDeepWiki',
+    'StreamUserTrajectoryReactiveUpdates', 'StreamCascadePanelReactiveUpdates',
+    'StreamCascadeReactiveUpdates', 'StreamCascadeSummariesReactiveUpdates',
+    'GenerateVibeAndReplaceStreaming', 'GenerateCodeMap', 'BranchCascadeAndGenerateCodeMap',
+  ];
+  
+  // Convert rawHandlers: mark streaming methods
+  const connectHandlers = {};
+  for (const [name, handler] of Object.entries(rawHandlers)) {
+    if (STREAMING_METHODS.includes(name)) {
+      connectHandlers[name] = streaming(handler.bind(handlers));
+    } else {
+      connectHandlers[name] = handler.bind(handlers);
     }
-    logger.info(`gRPC server listening on 127.0.0.1:${boundPort}`);
-    
-    // Output port for the extension to connect
-    // The original language_server outputs: "Server listening on port XXXXX"
+  }
+  
+  const csrfToken = args.csrf_token || process.env.WINDSURF_CSRF_TOKEN || '';
+  const connectServer = createConnectServer({
+    csrfToken,
+    handlers: connectHandlers,
+    logger,
+  });
+  
+  connectServer.listen(parseInt(port) || 0, '127.0.0.1', () => {
+    const boundPort = connectServer.address().port;
+    logger.info(`Connect-RPC server listening on 127.0.0.1:${boundPort} (HTTP/1.1, proto binary)`);
+    if (csrfToken) logger.info(`CSRF token validation: enabled`);
     console.log(`Server listening on port ${boundPort}`);
     
-    // Connect to extension server and send LanguageServerStarted callback
+    // Notify extension
     if (extensionClient) {
       extensionClient.connect();
-      // The real LS calls ExtensionServerService/LanguageServerStarted after binding
       extensionClient.notifyStarted(boundPort).then(() => {
         logger.info('ExtensionServer notified: LanguageServerStarted');
       }).catch(err => {
         logger.warn(`Failed to notify ExtensionServer: ${err.message}`);
       });
     }
-  }
-);
+  });
+} else {
+  // Standard gRPC mode (HTTP/2) - useful for testing with grpc clients
+  server.bindAsync(
+    `127.0.0.1:${port}`,
+    grpc.ServerCredentials.createInsecure(),
+    (err, boundPort) => {
+      if (err) {
+        logger.error(`Failed to bind: ${err.message}`);
+        process.exit(1);
+      }
+      logger.info(`gRPC server listening on 127.0.0.1:${boundPort} (HTTP/2)`);
+      console.log(`Server listening on port ${boundPort}`);
+      
+      if (extensionClient) {
+        extensionClient.connect();
+        extensionClient.notifyStarted(boundPort).then(() => {
+          logger.info('ExtensionServer notified: LanguageServerStarted');
+        }).catch(err => {
+          logger.warn(`Failed to notify ExtensionServer: ${err.message}`);
+        });
+      }
+    }
+  );
+}
 
 // Graceful shutdown
 process.on('SIGINT', () => {

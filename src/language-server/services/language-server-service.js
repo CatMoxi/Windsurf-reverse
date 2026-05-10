@@ -1605,30 +1605,34 @@ class LanguageServerService {
       return;
     }
 
+    let ended = false;
+    const safeEnd = () => {
+      if (!ended) { ended = true; call.end(); }
+    };
+
     try {
       this.api.connect();
       const upstream = this.api.stream(method, request);
       
       upstream.on('data', (chunk) => {
-        try { call.write(chunk); } catch (e) {}
+        if (!ended) { try { call.write(chunk); } catch (e) {} }
       });
       
-      upstream.on('end', () => {
-        call.end();
-      });
+      upstream.on('end', () => safeEnd());
       
       upstream.on('error', (err) => {
         this.log.error(`${method} stream error: ${err.message}`);
-        call.end();
+        safeEnd();
       });
       
       // If the client cancels, cancel upstream too
       call.on('cancelled', () => {
-        upstream.cancel();
+        ended = true;
+        try { upstream.cancel(); } catch (e) {}
       });
     } catch (err) {
       this.log.error(`${method} forward error: ${err.message}`);
-      call.end();
+      safeEnd();
     }
   }
 
