@@ -260,6 +260,122 @@ ACP (Agent Communication Protocol) - Windsurf 插件系统，用于 Cascade 与�
 
 ---
 
+## language_server 二进制逆向分析
+
+### 基本信息
+
+| 属性 | 值 |
+|---|---|
+| 文件 | `language_server_windows_x64.exe` |
+| 大小 | 163.7MB |
+| 语言 | **Go 1.26.1** |
+| 依赖 | 182+ Go packages |
+
+### 13 个 gRPC Services（比 JS 层多 7 个！）
+
+从二进制 strings 中提取到 **13 个服务**（extension.js 只暴露 6 个）：
+
+| Service | Methods | 方向 | 说明 |
+|---|---|---|---|
+| **ApiServerService** | 171 | LS → Cloud | ★ 云端真正 API（JS 层不可见） |
+| **LanguageServerService** | 172 | Extension → LS | 本地 API |
+| **SeatManagementService** | 151 | Extension → Cloud | 认证/团队管理 |
+| **ExtensionServerService** | 50 | LS → Extension | IDE 回调 |
+| **AnalyticsService** | 8 | LS → Cloud | 补全/分析遥测 |
+| **UserAnalyticsService** | 7 | LS → Cloud | 用户统计 |
+| **CascadePluginsService** | 5 | LS → Cloud | 插件注册 |
+| **BrowserPreviewService** | 4 | LS → Cloud | 浏览器预览 |
+| **FileSystemProviderService** | 3 | LS ↔ Extension | 虚拟文件系统 |
+| **ProductAnalyticsService** | 2 | LS → Cloud | 产品分析 |
+| **AuthService** | 1 | LS → Cloud | JWT 获取 |
+| **ChatClientServerService** | 1 | LS → Cloud | 聊天流 |
+| **DevService** | 1 | Extension → LS | 开发调试 |
+
+### ★ 关键发现：ApiServerService
+
+这是 language_server 直接调用 `server.codeium.com` 的 **真正云端 API**。extension.js 完全看不到它——它被封装在 language_server 内部。
+
+**主要方法类别：**
+
+- **AI 推理**: GetChatCompletions, GetStreamingCompletions, GetChatMessage, GetDeepWiki, GetTab, GetDevstralStream, GetEmbeddings, GetStreamingExternalChatCompletions
+- **模型管理**: GetCascadeModelConfigs, GetCommandModelConfigs, GetCliModelConfigs, AssignModel, AssignArenaModel, GetModelStatuses
+- **代码审查**: CheckBugs, AcceptBug, RejectBug, RunCodeAlignment, ApplyTrajectoryHeuristics
+- **录制/遥测**: RecordChat, RecordCompletions, RecordCortexTrajectory, RecordCortexStep, RecordEvent, UploadErrorTraces (~40 Record* methods)
+- **Windsurf JS Apps**: CreateWindsurfJSApp, DeployWindsurfJSApp, GetWindsurfJSApps
+- **代码分享**: CreateTrajectoryShare, FetchTrajectoryShare, ShareCodeMap, GetSharedCodeMap
+- **SSO/OIDC**: RegisterOidcProvider, ExchangeOidcCode, GetAllOidcProviders, RefreshOidcToken
+- **Hybrid 部署**: RegisterHybridDeployment, CheckHybridDeploymentStatus, CreateHybridDeploymentInternal
+- **搜索**: GetWebSearchResults, GetWebSearchRedirect, GetWebDocsOptions, SupportsRemoteIndexing
+
+### 29 个 Proto 源文件
+
+language_server 二进制中嵌入了 29 个 `.proto` 文件路径，揭示了 Codeium 的仓库结构：
+
+```
+exa/analytics_pb/analytics.proto
+exa/api_server_pb/api_server.proto        ★ 最重要，cloud API
+exa/auth_pb/auth.proto
+exa/auto_cascade_common_pb/auto_cascade_common.proto
+exa/browser_preview_pb/browser_preview.proto
+exa/bug_checker_pb/bug_checker.proto
+exa/cascade_plugins_pb/cascade_plugins.proto
+exa/chat_client_server_pb/chat_client_server.proto
+exa/chat_pb/chat.proto
+exa/codeium_common_pb/codeium_common.proto
+exa/context_module_pb/context_module.proto
+exa/cortex_pb/cortex.proto
+exa/dev_pb/dev.proto
+exa/diff_action_pb/diff_action.proto
+exa/eval_pb/eval.proto
+exa/extension_server_pb/extension_server.proto
+exa/file_system_provider_pb/file_system_provider.proto
+exa/index_pb/index.proto
+exa/knowledge_base_pb/knowledge_base.proto
+exa/language_server_pb/language_server.proto
+exa/model_management_pb/model_management.proto
+exa/opensearch_clients_pb/opensearch_clients.proto
+exa/product_analytics_pb/product_analytics.proto
+exa/prompt_pb/prompt.proto
+exa/reactive_component_pb/reactive_component.proto
+exa/seat_management_pb/seat_management.proto
+exa/tokenizer_pb/tokenizer.proto
+exa/trainer_pb/config.proto
+exa/tree_sitter/language_data_pb/language_data.proto
+exa/user_analytics_pb/user_analytics.proto
+```
+
+### Go 核心依赖
+
+| 类别 | 包 |
+|---|---|
+| **gRPC/Protobuf** | google.golang.org/grpc, google.golang.org/protobuf, github.com/bufbuild/protovalidate-go |
+| **AI/ML** | github.com/sashabaranov/go-openai, github.com/dmitryikh/leaves |
+| **Git** | github.com/go-git/go-git, github.com/go-git/go-billy |
+| **Web Scraping** | github.com/gocolly/colly, github.com/PuerkitoBio/goquery, github.com/temoto/robotstxt |
+| **Tree-sitter** | github.com/tree-sitter/tree-sitter |
+| **Monitoring** | github.com/getsentry/sentry-go, github.com/prometheus/client_golang |
+| **Feature Flags** | github.com/Unleash/unleash-client-go |
+| **Terminal** | github.com/danielgatis/go-vte, github.com/vito/midterm |
+| **MCP** | github.com/mark3labs/mcp-go |
+| **Auth** | github.com/golang-jwt/jwt, github.com/form3tech-oss/jwt-go |
+| **Proxy** | github.com/bdwyertech/proxyplease |
+
+### 62 个 Go 内部包
+
+LS 的 Go 代码组织成 62 个包，包括:
+- `exa.cortex` - Cascade AI 代理核心引擎
+- `exa.language_server` - 本地 gRPC 服务实现
+- `exa.transport` - gRPC 传输层
+- `exa.tree_sitter` - 代码解析
+- `exa.terminal` - 终端模拟
+- `exa.web_scraping` - 网页抓取（用于 read_url_content 工具）
+- `exa.mem` - 内存/上下文管理
+- `exa.prompt` - Prompt 构建
+- `exa.unleash` - Feature flag 客户端
+- `exa.proxy` - 代理支持
+
+---
+
 ## 关键安全机制
 
 1. **CSRF Token**: extension.js 生成随机 csrfToken，通过 `--csrf_token` 传给 language_server，之后每次 RPC 调用都在 header 中带上 `x-codeium-csrf-token`
