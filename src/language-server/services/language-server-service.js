@@ -648,17 +648,20 @@ class LanguageServerService {
   getDeepWiki(call) {
     const request = call.request;
     this.log.debug('GetDeepWiki called');
-    // TODO: Implement streaming logic
-    // Forward to ApiServerService and stream responses back
-    call.end();
+    this._forwardStream('GetDeepWiki', request, call);
   }
 
   /** Unary: CheckUserMessageRateLimit */
   checkUserMessageRateLimit(call, callback) {
     const request = call.request;
     this.log.debug('CheckUserMessageRateLimit called');
-    // TODO: Implement - forward to API server or handle locally
-    callback(null, {});
+    // Forward to API server to get real rate limit info
+    if (this.api && this.apiKey) {
+      this._forwardUnary('CheckUserMessageRateLimit', request, callback);
+    } else {
+      // Default: has capacity, unlimited
+      callback(null, { hasCapacity: true, messagesRemaining: 500, maxMessages: 500 });
+    }
   }
 
   /** Unary: GetMessageTokenCount */
