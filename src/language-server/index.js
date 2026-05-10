@@ -22,6 +22,21 @@ logger.info('Windsurf Language Server (reverse-engineered)');
 logger.info(`API Server: ${args.api_server_url || 'https://server.codeium.com'}`);
 logger.info(`Extension Server Port: ${args.extension_server_port || 'not set'}`);
 
+// Read initial metadata from stdin (matches real LS behavior)
+// The extension writes a serialized Metadata protobuf to stdin at startup
+if (args.stdin_initial_metadata) {
+  const chunks = [];
+  process.stdin.on('data', chunk => chunks.push(chunk));
+  process.stdin.on('end', () => {
+    if (chunks.length > 0) {
+      const metadataBuf = Buffer.concat(chunks);
+      logger.info(`Received ${metadataBuf.length}b initial metadata from stdin`);
+      // TODO: decode Metadata protobuf and extract api_key
+    }
+  });
+  process.stdin.resume();
+}
+
 // Proto loading configuration
 const PROTO_DIR = path.join(__dirname, 'protos');
 const PROTO_LOADER_OPTS = {
@@ -93,9 +108,15 @@ server.bindAsync(
     // The original language_server outputs: "Server listening on port XXXXX"
     console.log(`Server listening on port ${boundPort}`);
     
-    // Connect to extension server
+    // Connect to extension server and send LanguageServerStarted callback
     if (extensionClient) {
       extensionClient.connect();
+      // The real LS calls ExtensionServerService/LanguageServerStarted after binding
+      extensionClient.notifyStarted(boundPort).then(() => {
+        logger.info('ExtensionServer notified: LanguageServerStarted');
+      }).catch(err => {
+        logger.warn(`Failed to notify ExtensionServer: ${err.message}`);
+      });
     }
   }
 );

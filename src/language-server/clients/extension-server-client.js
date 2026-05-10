@@ -146,6 +146,17 @@ class ExtensionServerClient {
   async getConfiguration(section) {
     return this.call('GetConfiguration', { section });
   }
+
+  /**
+   * Notify ExtensionServer that the Language Server has started.
+   * This is the callback the extension waits for (60s timeout).
+   * The real LS sends this after binding its gRPC port.
+   */
+  async notifyStarted(port) {
+    return this.call('LanguageServerStarted', {
+      port: port,
+    });
+  }
 }
 
 module.exports = ExtensionServerClient;
