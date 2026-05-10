@@ -307,9 +307,27 @@ ACP (Agent Communication Protocol) - Windsurf 插件系统，用于 Cascade 与�
 - **Hybrid 部署**: RegisterHybridDeployment, CheckHybridDeploymentStatus, CreateHybridDeploymentInternal
 - **搜索**: GetWebSearchResults, GetWebSearchRedirect, GetWebDocsOptions, SupportsRemoteIndexing
 
-### 29 个 Proto 源文件
+### 完整 Proto 定义提取（从二进制 FileDescriptorProto）
 
-language_server 二进制中嵌入了 29 个 `.proto` 文件路径，揭示了 Codeium 的仓库结构：
+通过解析 Go 二进制中嵌入的 `FileDescriptorProto`（protobuf 自描述格式），**完整还原了所有 proto 定义**：
+
+| 指标 | 数量 |
+|---|---|
+| Proto 文件 | **61**（含 google/protobuf WKT, buf/validate, cel/expr 等） |
+| Messages | **2,746**（含嵌套消息，完整字段名+类型+编号） |
+| Enums | **287**（含完整值定义） |
+| Services | **20** |
+| RPC Methods | **646**（含 streaming 标注） |
+| Map 字段 | 有 |
+| Oneof 字段 | 有 |
+| 生成文件 | `docs/protos/` (61 .proto3 files, 651KB) |
+| 结构化数据 | `tools/proto-descriptors-full.json` |
+
+提取工具：`tools/extract-proto-final.js`（扫描整个二进制寻找 FileDescriptorProto 起始标记）
+
+### 29 个 Exa Proto 源文件
+
+language_server 二进制中嵌入了 29 个 `exa/` 前缀的 `.proto` 文件，揭示了 Codeium 的仓库结构：
 
 ```
 exa/analytics_pb/analytics.proto

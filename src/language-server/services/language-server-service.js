@@ -373,19 +373,15 @@ class LanguageServerService {
   /** Server-streaming: HandleStreamingCommand */
   handleStreamingCommand(call) {
     const request = call.request;
-    this.log.debug('HandleStreamingCommand called');
-    // TODO: Implement streaming logic
-    // Forward to ApiServerService and stream responses back
-    call.end();
+    this.log.info(`HandleStreamingCommand: ${request.command_text?.substring(0, 50) || '?'}`);
+    this._forwardStream('HandleStreamingCommand', request, call);
   }
 
   /** Server-streaming: HandleStreamingTab */
   handleStreamingTab(call) {
     const request = call.request;
-    this.log.debug('HandleStreamingTab called');
-    // TODO: Implement streaming logic
-    // Forward to ApiServerService and stream responses back
-    call.end();
+    this.log.debug(`HandleStreamingTab: src=${request.request_source}`);
+    this._forwardStream('HandleStreamingTab', request, call);
   }
 
   /** Unary: HandleStreamingTabV2 */
@@ -399,10 +395,8 @@ class LanguageServerService {
   /** Server-streaming: HandleStreamingTerminalCommand */
   handleStreamingTerminalCommand(call) {
     const request = call.request;
-    this.log.debug('HandleStreamingTerminalCommand called');
-    // TODO: Implement streaming logic
-    // Forward to ApiServerService and stream responses back
-    call.end();
+    this.log.debug('HandleStreamingTerminalCommand');
+    this._forwardStream('HandleStreamingTerminalCommand', request, call);
   }
 
   /** Unary: UploadRecentCommands */
@@ -520,19 +514,15 @@ class LanguageServerService {
   /** Server-streaming: GetChatMessage */
   getChatMessage(call) {
     const request = call.request;
-    this.log.debug('GetChatMessage called');
-    // TODO: Implement streaming logic
-    // Forward to ApiServerService and stream responses back
-    call.end();
+    this.log.info('GetChatMessage: streaming chat response');
+    this._forwardStream('GetChatMessage', request, call);
   }
 
   /** Server-streaming: RawGetChatMessage */
   rawGetChatMessage(call) {
     const request = call.request;
-    this.log.debug('RawGetChatMessage called');
-    // TODO: Implement streaming logic
-    // Forward to ApiServerService and stream responses back
-    call.end();
+    this.log.info('RawGetChatMessage: streaming raw chat');
+    this._forwardStream('RawGetChatMessage', request, call);
   }
 
   /** Server-streaming: GetDeepWiki */
@@ -1600,6 +1590,65 @@ class LanguageServerService {
     callback(null, {});
   }
 
+  // ========================
+  // Internal helpers
+  // ========================
+
+  /**
+   * Forward a server-streaming call to the API server
+   * Pipes the upstream stream directly back to the client.
+   */
+  _forwardStream(method, request, call) {
+    if (!this.api) {
+      this.log.warn(`${method}: no API client, ending stream`);
+      call.end();
+      return;
+    }
+
+    try {
+      this.api.connect();
+      const upstream = this.api.stream(method, request);
+      
+      upstream.on('data', (chunk) => {
+        try { call.write(chunk); } catch (e) {}
+      });
+      
+      upstream.on('end', () => {
+        call.end();
+      });
+      
+      upstream.on('error', (err) => {
+        this.log.error(`${method} stream error: ${err.message}`);
+        call.end();
+      });
+      
+      // If the client cancels, cancel upstream too
+      call.on('cancelled', () => {
+        upstream.cancel();
+      });
+    } catch (err) {
+      this.log.error(`${method} forward error: ${err.message}`);
+      call.end();
+    }
+  }
+
+  /**
+   * Forward a unary call to the API server
+   */
+  _forwardUnary(method, request, callback) {
+    if (!this.api) {
+      callback(null, {});
+      return;
+    }
+
+    this.api.connect();
+    this.api.call(method, request)
+      .then(response => callback(null, response))
+      .catch(err => {
+        this.log.error(`${method} error: ${err.message}`);
+        callback(null, {});
+      });
+  }
 }
 
 module.exports = LanguageServerService;

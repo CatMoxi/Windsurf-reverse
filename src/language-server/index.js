@@ -42,6 +42,7 @@ const apiServerProto = loadProto('exa/api_server_pb/api_server.proto');
 const LanguageServerHandlers = require('./services/language-server-service');
 const ApiServerClient = require('./clients/api-server-client');
 const ExtensionServerClient = require('./clients/extension-server-client');
+const { wrapWithMiddleware } = require('./core/grpc-middleware');
 
 // Initialize clients
 const apiClient = new ApiServerClient({
@@ -65,10 +66,16 @@ const server = new grpc.Server({
   'grpc.max_send_message_length': 100 * 1024 * 1024,
 });
 
-// Register LanguageServerService
+// Register LanguageServerService with middleware
 const lsService = languageServerProto.exa.language_server_pb.LanguageServerService.service;
 const handlers = new LanguageServerHandlers({ apiClient, extensionClient, logger, args });
-server.addService(lsService, handlers.getHandlers());
+const rawHandlers = handlers.getHandlers();
+const wrappedHandlers = wrapWithMiddleware(rawHandlers, {
+  logger,
+  logPayloads: !!args.log_payloads,
+});
+server.addService(lsService, wrappedHandlers);
+logger.info(`Registered ${Object.keys(rawHandlers).length} RPC handlers (middleware: logging${args.log_payloads ? '+payloads' : ''})`);
 
 // Start server
 const port = args.port || 0; // 0 = random port (like original)
