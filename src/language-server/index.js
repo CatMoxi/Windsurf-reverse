@@ -86,11 +86,34 @@ if (args.extension_server_port) {
   });
 }
 
+const { ApiKeyPool } = require('./core/api-key-pool');
 const SeatManagementClient = require('./clients/seat-management-client');
 const seatMgmtClient = new SeatManagementClient({
   baseUrl: args.register_api_server_url || 'https://register.windsurf.com',
   logger,
 });
+
+// API Key Pool initialization
+let keyPool = null;
+if (args.api_keys_file) {
+  const fs = require('fs');
+  try {
+    const content = fs.readFileSync(args.api_keys_file, 'utf-8');
+    const keys = content.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
+    if (keys.length > 0) {
+      keyPool = new ApiKeyPool({ keys, logger, cooldownMs: args.pool_cooldown_ms || 60000 });
+      logger.info(`API Key Pool: ${keys.length} keys loaded from ${args.api_keys_file}`);
+    }
+  } catch (e) {
+    logger.error(`Failed to load API keys file: ${e.message}`);
+  }
+} else if (args.api_keys) {
+  const keys = args.api_keys.split(',').map(k => k.trim()).filter(Boolean);
+  if (keys.length > 0) {
+    keyPool = new ApiKeyPool({ keys, logger, cooldownMs: args.pool_cooldown_ms || 60000 });
+    logger.info(`API Key Pool: ${keys.length} keys from CLI`);
+  }
+}
 
 // Create gRPC server
 const server = new grpc.Server({
@@ -100,7 +123,7 @@ const server = new grpc.Server({
 
 // Register LanguageServerService with middleware
 const lsService = languageServerProto.exa.language_server_pb.LanguageServerService.service;
-const handlers = new LanguageServerHandlers({ apiClient, inferenceClient, extensionClient, seatMgmtClient, logger, args });
+const handlers = new LanguageServerHandlers({ apiClient, inferenceClient, extensionClient, seatMgmtClient, logger, args, keyPool });
 const rawHandlers = handlers.getHandlers();
 const wrappedHandlers = wrapWithMiddleware(rawHandlers, {
   logger,

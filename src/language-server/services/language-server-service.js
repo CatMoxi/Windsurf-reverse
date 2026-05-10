@@ -1,6 +1,7 @@
 'use strict';
 
 const CascadeEngine = require('../core/cascade-engine');
+const { ApiKeyPool } = require('../core/api-key-pool');
 
 /**
  * LanguageServerService - Full implementation of all 172 RPC methods.
@@ -10,7 +11,7 @@ const CascadeEngine = require('../core/cascade-engine');
  * and calls back to ExtensionServerService for IDE operations.
  */
 class LanguageServerService {
-  constructor({ apiClient, inferenceClient, extensionClient, seatMgmtClient, logger, args }) {
+  constructor({ apiClient, inferenceClient, extensionClient, seatMgmtClient, logger, args, keyPool }) {
     this.api = apiClient;
     this.inference = inferenceClient; // For high-performance completions
     this.ext = extensionClient;
@@ -22,8 +23,21 @@ class LanguageServerService {
     this.apiKey = args.api_key || '';
     this.csrfToken = args.csrf_token || '';
     
+    // API key pool for multi-account rotation
+    this.keyPool = keyPool || null;
+    
     // Cascade engine
     this.cascade = new CascadeEngine({ apiClient, extensionClient, logger });
+  }
+  
+  /**
+   * Get the current API key — from pool (round-robin) or static.
+   */
+  _getApiKey() {
+    if (this.keyPool && this.keyPool.size > 0) {
+      return this.keyPool.getKey() || this.apiKey;
+    }
+    return this.apiKey;
   }
 
   getHandlers() {
@@ -266,11 +280,12 @@ class LanguageServerService {
   getCascadeModelConfigs(call, callback) {
     const request = call.request;
     this.log.debug('GetCascadeModelConfigs');
-    if (this.api && this.apiKey) {
+    const key = this._getApiKey();
+    if (this.api && key) {
       this.api.connect();
       const apiReq = camelToSnake(request);
       if (!apiReq.metadata) apiReq.metadata = {};
-      apiReq.metadata.api_key = this.apiKey;
+      apiReq.metadata.api_key = key;
       this.api.call('GetCascadeModelConfigs', apiReq)
         .then(response => callback(null, snakeToCamel(response)))
         .catch(err => callback(null, { modelConfigs: [] }));
@@ -529,7 +544,8 @@ class LanguageServerService {
     const request = call.request;
     this.log.info('GetChatMessage: streaming chat response');
     
-    if (!this.api || !this.apiKey) {
+    const key = this._getApiKey();
+    if (!this.api || !key) {
       this.log.warn('GetChatMessage: no API client/key, ending stream');
       call.end();
       return;
@@ -631,7 +647,7 @@ class LanguageServerService {
     }
     
     return {
-      metadata: { api_key: this.apiKey },
+      metadata: { api_key: this._getApiKey() },
       chat_message_prompts: chatMessagePrompts,
       chat_model_name: request.chatModelName || request.chat_model_name || '',
       chat_model_uid: request.chatModelUid || request.chat_model_uid || '',
@@ -1760,47 +1776,55 @@ class LanguageServerService {
    * Pipes the upstream stream directly back to the client.
    */
   _forwardStream(method, request, call) {
-    if (!this.api || !this.apiKey) {
+    const key = this._getApiKey();
+    if (!this.api || !key) {
       this.log.warn(`${method}: no API client/key, ending stream`);
       call.end();
       return;
     }
 
     let ended = false;
+    let gotData = false;
     const safeEnd = () => {
       if (!ended) { ended = true; try { call.end(); } catch(e) {} }
     };
 
     try {
       this.api.connect();
-      // Convert camelCase request to snake_case for gRPC proto-loader
       const apiReq = camelToSnake(request);
       if (!apiReq.metadata) apiReq.metadata = {};
-      apiReq.metadata.api_key = this.apiKey;
+      apiReq.metadata.api_key = key;
       
       const upstream = this.api.stream(method, apiReq);
       
       upstream.on('data', (chunk) => {
         if (!ended) {
-          // Convert snake_case response chunk to camelCase for proto-codec encoding
+          gotData = true;
           try { call.write(snakeToCamel(chunk)); } catch (e) {}
         }
       });
       
-      upstream.on('end', () => safeEnd());
-      
-      upstream.on('error', (err) => {
-        this.log.error(`${method} stream error: ${err.message}`);
+      upstream.on('end', () => {
+        if (gotData && this.keyPool) this.keyPool.reportSuccess(key);
         safeEnd();
       });
       
-      // If the client cancels, cancel upstream too
+      upstream.on('error', (err) => {
+        this.log.error(`${method} stream error: ${err.message}`);
+        if (this.keyPool) {
+          const rl = /rate.limit|quota|429/i.test(err.message);
+          this.keyPool.reportFailure(key, { rateLimited: rl, error: err.message });
+        }
+        safeEnd();
+      });
+      
       call.on('cancelled', () => {
         ended = true;
         try { upstream.cancel(); } catch (e) {}
       });
     } catch (err) {
       this.log.error(`${method} forward error: ${err.message}`);
+      if (this.keyPool) this.keyPool.reportFailure(key, { error: err.message });
       safeEnd();
     }
   }
@@ -1809,21 +1833,28 @@ class LanguageServerService {
    * Forward a unary call to the API server
    */
   _forwardUnary(method, request, callback) {
-    if (!this.api || !this.apiKey) {
+    const key = this._getApiKey();
+    if (!this.api || !key) {
       callback(null, {});
       return;
     }
 
     this.api.connect();
-    // Convert camelCase request to snake_case, inject API key
     const apiReq = camelToSnake(request);
     if (!apiReq.metadata) apiReq.metadata = {};
-    apiReq.metadata.api_key = this.apiKey;
+    apiReq.metadata.api_key = key;
     
     this.api.call(method, apiReq)
-      .then(response => callback(null, snakeToCamel(response)))
+      .then(response => {
+        if (this.keyPool) this.keyPool.reportSuccess(key);
+        callback(null, snakeToCamel(response));
+      })
       .catch(err => {
         this.log.error(`${method} error: ${err.message}`);
+        if (this.keyPool) {
+          const rl = /rate.limit|quota|429/i.test(err.message);
+          this.keyPool.reportFailure(key, { rateLimited: rl, error: err.message });
+        }
         callback(null, {});
       });
   }
