@@ -47,6 +47,10 @@ function getCodec() {
 function createConnectServer({ csrfToken, handlers, logger, protoDecoder }) {
   const server = http.createServer();
   
+  // Request stats
+  const stats = { total: 0, errors: 0, byMethod: {} };
+  server.getStats = () => stats;
+  
   server.on('error', (err) => {
     if (err.code === 'EADDRINUSE') {
       logger.error(`Port already in use: ${err.address}:${err.port}`);
@@ -83,6 +87,10 @@ function createConnectServer({ csrfToken, handlers, logger, protoDecoder }) {
     
     const serviceName = parts[parts.length - 2];
     const methodName = parts[parts.length - 1];
+    
+    // Track stats
+    stats.total++;
+    stats.byMethod[methodName] = (stats.byMethod[methodName] || 0) + 1;
     
     // Find handler
     const handler = handlers[methodName];
@@ -154,6 +162,7 @@ function handleUnaryRequest(req, res, methodName, request, handler, logger, star
     const elapsed = Date.now() - startTime;
     
     if (err) {
+      stats.errors++;
       logger.debug(`← ${methodName} ERROR ${elapsed}ms: ${err.message}`);
       const code = err.code || 'internal';
       res.writeHead(err.httpStatus || 500, {
@@ -175,7 +184,7 @@ function handleUnaryRequest(req, res, methodName, request, handler, logger, star
       'Connect-Protocol-Version': '1',
     });
     res.end(responseBody);
-    logger.debug(`← ${methodName} ${elapsed}ms OK`);
+    logger.debug(`← ${methodName} ${elapsed}ms ${responseBody.length}b`);
   };
   
   try {

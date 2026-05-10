@@ -10,8 +10,9 @@ const CascadeEngine = require('../core/cascade-engine');
  * and calls back to ExtensionServerService for IDE operations.
  */
 class LanguageServerService {
-  constructor({ apiClient, extensionClient, seatMgmtClient, logger, args }) {
+  constructor({ apiClient, inferenceClient, extensionClient, seatMgmtClient, logger, args }) {
     this.api = apiClient;
+    this.inference = inferenceClient; // For high-performance completions
     this.ext = extensionClient;
     this.seatMgmt = seatMgmtClient;
     this.log = logger;

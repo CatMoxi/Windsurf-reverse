@@ -66,6 +66,17 @@ const apiClient = new ApiServerClient({
   logger,
 });
 
+// Inference API client (for high-performance completions path)
+let inferenceClient = null;
+if (args.inference_api_server_url) {
+  inferenceClient = new ApiServerClient({
+    address: args.inference_api_server_url,
+    apiKey: args.api_key || '',
+    logger,
+  });
+  logger.info(`Inference API: ${args.inference_api_server_url}`);
+}
+
 let extensionClient = null;
 if (args.extension_server_port) {
   extensionClient = new ExtensionServerClient({
@@ -89,7 +100,7 @@ const server = new grpc.Server({
 
 // Register LanguageServerService with middleware
 const lsService = languageServerProto.exa.language_server_pb.LanguageServerService.service;
-const handlers = new LanguageServerHandlers({ apiClient, extensionClient, seatMgmtClient, logger, args });
+const handlers = new LanguageServerHandlers({ apiClient, inferenceClient, extensionClient, seatMgmtClient, logger, args });
 const rawHandlers = handlers.getHandlers();
 const wrappedHandlers = wrapWithMiddleware(rawHandlers, {
   logger,
