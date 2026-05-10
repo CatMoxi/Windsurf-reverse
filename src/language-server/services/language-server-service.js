@@ -666,16 +666,63 @@ class LanguageServerService {
   getUserStatus(call, callback) {
     const request = call.request;
     this.log.debug('GetUserStatus called');
-    // TODO: Implement - forward to API server or handle locally
-    callback(null, {});
+    
+    // GetUserStatus is handled locally by the LS using cached user info.
+    // The real LS calls GetUser on the API server at startup and caches the result.
+    // Here we forward to API server's GetUser to get fresh data.
+    if (this.api && this.api.apiKey) {
+      this.api.connect();
+      this.api.call('GetUser', { metadata: request.metadata || {} })
+        .then(response => {
+          // Map API server GetUser response to GetUserStatus format
+          const userStatus = {
+            pro: response.user_status?.pro || false,
+            disable_telemetry: response.user_status?.disable_telemetry || false,
+            name: response.user_status?.name || '',
+            team_id: response.user_status?.team_id || '',
+            email: response.user_status?.email || '',
+            team_status: response.user_status?.team_status || 0,
+            user_features: response.user_status?.user_features || [],
+            teams_features: response.user_status?.teams_features || [],
+            teams_tier: response.user_status?.teams_tier || 0,
+            permissions: response.user_status?.permissions || [],
+            plan_status: response.user_status?.plan_status || 0,
+          };
+          const planInfo = response.plan_info || {};
+          this.log.info(`GetUserStatus: name=${userStatus.name}, pro=${userStatus.pro}`);
+          callback(null, { user_status: userStatus, plan_info: planInfo });
+        })
+        .catch(err => {
+          this.log.warn(`GetUserStatus API error: ${err.message}, returning empty`);
+          // Fallback: return empty status (extension handles gracefully)
+          callback(null, { user_status: {}, plan_info: {} });
+        });
+    } else {
+      // No API client — return minimal response
+      callback(null, { user_status: {}, plan_info: {} });
+    }
   }
 
   /** Unary: GetProfileData */
   getProfileData(call, callback) {
     const request = call.request;
     this.log.debug('GetProfileData called');
-    // TODO: Implement - forward to API server or handle locally
-    callback(null, {});
+    
+    // GetProfileData returns the user's profile picture URL.
+    // Forward to API server.
+    if (this.api) {
+      this.api.connect();
+      this.api.call('GetProfileData', { api_key: request.api_key || this.api.apiKey || '' })
+        .then(response => {
+          callback(null, { profile_picture_url: response.profile_picture_url || '' });
+        })
+        .catch(err => {
+          this.log.warn(`GetProfileData API error: ${err.message}`);
+          callback(null, { profile_picture_url: '' });
+        });
+    } else {
+      callback(null, { profile_picture_url: '' });
+    }
   }
 
   /** Unary: CaptureCode */

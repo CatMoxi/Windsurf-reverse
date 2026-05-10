@@ -151,10 +151,19 @@ class ExtensionServerClient {
    * Notify ExtensionServer that the Language Server has started.
    * This is the callback the extension waits for (60s timeout).
    * The real LS sends this after binding its gRPC port.
+   * 
+   * LanguageServerStartedRequest:
+   *   language_server_port: int32 (field 1)
+   *   lsp_port: int32 (field 2)
+   *   chat_client_port: int32 (field 3)
+   *   csrf_token: string (field 4)
    */
-  async notifyStarted(port) {
+  async notifyStarted({ languageServerPort, lspPort, chatClientPort, csrfToken }) {
     return this.call('LanguageServerStarted', {
-      port: port,
+      language_server_port: languageServerPort,
+      lsp_port: lspPort || 0,
+      chat_client_port: chatClientPort || 0,
+      csrf_token: csrfToken || '',
     });
   }
 }

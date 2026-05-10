@@ -138,7 +138,10 @@ if (useConnect) {
     // Notify extension
     if (extensionClient) {
       extensionClient.connect();
-      extensionClient.notifyStarted(boundPort).then(() => {
+      extensionClient.notifyStarted({
+          languageServerPort: boundPort,
+          csrfToken: csrfToken,
+        }).then(() => {
         logger.info('ExtensionServer notified: LanguageServerStarted');
       }).catch(err => {
         logger.warn(`Failed to notify ExtensionServer: ${err.message}`);
@@ -160,7 +163,7 @@ if (useConnect) {
       
       if (extensionClient) {
         extensionClient.connect();
-        extensionClient.notifyStarted(boundPort).then(() => {
+        extensionClient.notifyStarted({ languageServerPort: boundPort }).then(() => {
           logger.info('ExtensionServer notified: LanguageServerStarted');
         }).catch(err => {
           logger.warn(`Failed to notify ExtensionServer: ${err.message}`);
