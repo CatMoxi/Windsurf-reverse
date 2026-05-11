@@ -71,18 +71,30 @@ fn default_max_tokens() -> u32 { 8192 }
 
 /// Map Anthropic model names to Windsurf model UIDs
 /// Unknown names are passed through as-is (allows direct UID use)
-/// Note: self-serve/devin accounts typically only support "gpt-5-5-low"
+///
+/// Available models (from GetCascadeModelConfigs):
+///   claude-opus-4-7-low/medium/high/xhigh/max, claude-opus-4-6, claude-opus-4-6-thinking
+///   claude-sonnet-4-6, claude-sonnet-4-6-thinking, claude-sonnet-4-6-1m
+///   gpt-5-5-low/medium/high/xhigh, gpt-5-4-low/medium/high/xhigh
+///   gemini-3-1-pro-low/high, kimi-k2-5/6, deepseek-v4, swe-1-6
 fn map_model(model: &str) -> &str {
     match model {
-        m if m.contains("claude-sonnet-4") && !m.ends_with("-low") => "gpt-5-5-low",
-        m if m.contains("claude-opus-4") && !m.ends_with("-low") => "gpt-5-5-low",
-        m if m.contains("claude-3-5-sonnet") | m.contains("claude-3.5-sonnet") => "gpt-5-5-low",
-        m if m.contains("claude-3-opus") => "gpt-5-5-low",
-        m if m.contains("gpt-4o") && !m.ends_with("-low") => "gpt-5-5-low",
-        m if m.contains("gpt-4") && !m.ends_with("-low") => "gpt-5-5-low",
-        m if m.contains("gemini-2.5") && !m.ends_with("-low") => "gpt-5-5-low",
-        m if m.contains("gemini-2.0") && !m.ends_with("-low") => "gpt-5-5-low",
-        _ => model, // pass through as-is (supports direct Windsurf model UIDs)
+        // Claude Opus 4
+        m if m.contains("claude-opus-4") && !m.contains("-4-6") && !m.contains("-4-7") => "claude-opus-4-6",
+        // Claude Sonnet 4
+        m if m.contains("claude-sonnet-4") && !m.contains("-4-6") => "claude-sonnet-4-6",
+        // Claude 3.5 Sonnet → map to Claude Sonnet 4
+        m if m.contains("claude-3-5-sonnet") | m.contains("claude-3.5-sonnet") => "claude-sonnet-4-6",
+        // Claude 3 Opus → map to Claude Opus 4
+        m if m.contains("claude-3-opus") => "claude-opus-4-6",
+        // GPT-4o → GPT 5.5
+        m if m.contains("gpt-4o") => "gpt-5-5-low",
+        // GPT-4 → GPT 5.4
+        m if m.contains("gpt-4") && !m.contains("gpt-4o") => "gpt-5-4-low",
+        // Gemini 2.5 → Gemini 3.1 Pro
+        m if m.contains("gemini-2.5") | m.contains("gemini-2.0") => "gemini-3-1-pro-low",
+        // Pass through as-is (supports direct Windsurf model UIDs)
+        _ => model,
     }
 }
 
