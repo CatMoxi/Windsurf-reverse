@@ -1,0 +1,157 @@
+﻿=== OFFSET 0x34F5041 ===
+You are Cascade, a powerful agentic AI coding assistant.<workspace_layout workspace="%s">
+%s
+</workspace_layout>LifeguardFindStringConverter: Find is nil in step outputplanner model unreachable due to incomplete envelope: %vRefreshed expired model assignment JWT, retrying requestProposeCodeStringConverter: proposeCode is nil in outputGrepSearchV2StringConverter: GrepSearchV2 is nil in stepClusterQueryStringConverter: ClusterQuery is nil in stepViewCodeItemStringConverter: ViewCodeItem is nil in 
+
+
+=== OFFSET 0x3519307 ===
+Be terse and direct. Briefly summarize after clusters of tool calls when needed.If changes are in files you touched, understand them; if unrelated, ignore them.When user asks for 'review', prioritize bugs, risks, regressions, missing tests.- Receive user prompts and context from the IDE, such as files in the workspace.- If the changes are in unrelated files, just ignore them and don't revert them.(#eq? <@capture|"literal"> <@capture|"literal">)
+Checks if two values are equal.ntlm> No credentials
+
+
+=== OFFSET 0x34D5CAC ===
+Be concise and avoid unnecessary verbosity.cascade-add-annotation-conversational-mixincascade-view-code-item-tool-config-overridecascade-command-status-tool-config-overrideforced no tool mode based on user status %vChecking cascade config for tool choice: %sfailed to archive code tracker commit stateReached max size of %d bytes after %d filesntlm> Expected %d as return status, got: %ddid not receive a challenge from the server!!binary value contains invalid base64 datafound character that cannot
+
+
+=== OFFSET 0x3538F4D ===
+No acknowledgment phrases: Never start responses with phrases like "You're absolutely right!", "Great idea!", "I agree", "Good point", "That makes sense", etc. Jump straight into addressing the request without any preamble or validation of the user's statement.- No acknowledgment phrases. Never start responses with phrases like "You're absolutely right!", "Great idea!", "I agree", "Good point", "That makes sense", etc. Jump straight into addressing the request without any preamble or validation 
+
+
+=== OFFSET 0x34E3701 ===
+Format your messages with Markdown.Each operation starts with one of three headers:- Each reference should have a stand alone path.- Don't nest bullets or create deep hierarchies.CascadeConfig Default Overrides for Model %s: %slastFileState or currFileState is nil for uri %sFailed to get local path for worktrees directorycould not get relevant languages for language %sRequeuing canceled immediate indexing job for %sMigrating allowCascadeAccessGitignoreFiles: truebasic> Successfully injected Basi
+
+
+=== OFFSET 0x3506A2B ===
+Use single backtick inline code for variable or function names.  - Don't pack unrelated questions into one query | split them.- Emit function calls to run terminal commands and apply patches.unleash server URL %s should no longer link directly to /featurescrypto/des: use of TripleDES is not allowed in FIPS 140-only modecryptobyte: high-tag number identifier octets not supported: 0x%xcryptobyte: pending child length %d exceeds %d-byte length prefixfindFieldInfo: error building index when looking 
+
+
+=== OFFSET 0x350E45D ===
+fenced code blocks with language when referencing code snippets.You can run terminal commands. Never include `cd` - use cwd parameter.- Keep bullets to one line unless breaking for clarity is unavoidable.Can only use GetRelatedCCIsFromLineRanges with CodeContextItemNodeTypeCan only use GetRelatedCcisFromLineRanges with CodeContextItemNodeTypecrypto/ecdsa: only crypto/rand.Reader is allowed in FIPS 140-only modecrypto/ed25519: use of Ed25519ctx is not allowed in FIPS 140-only modechacha20poly1305
+
+
+=== OFFSET 0x3514578 ===
+citation format when mentioning any file path in your response- Format: `@/Users/alice/projects/myapp/src/file.ext:30` for specific linesUse grep with the following arguments: path=(%s), query=(%s), includes=(%s)No saved framework. Further research is needed to determine the framework.
+Select a PROPOSAL using the %s tool. **DO NOT TRY TO CALL ANY OTHER TOOL.**/exa.seat_management_pb.SeatManagementService/ExchangePKCEAuthorizationCode/exa.seat_management_pb.SeatManagementService/BulkEditUserAppro
+
+
+=== OFFSET 0x352EA70 ===
+NEVER include `cd` as part of the command. Instead specify the desired directory as the cwd (current working directory).**- While you are working, you might notice unexpected changes that you didn't make. If this happens, STOP IMMEDIATELY and ask the user how they would like to proceed.Before creating a new memory, first check to see if a semantically related memory already exists in the database. If found, update it instead of creating a duplicate.Parsed AGENTS.md file: MemoryId=%s, Title=%s, F
+
+
+=== OFFSET 0x3519292 ===
+markdown list syntax to format lists.- Multiple grep searches with different regex patterns should run simultaneouslyBe terse and direct. Briefly summarize after clusters of tool calls when needed.If changes are in files you touched, understand them; if unrelated, ignore them.When user asks for 'review', prioritize bugs, risks, regressions, missing tests.- Receive user prompts and context from the IDE, such as files in the workspace.- If the changes are in unrelated files, just ignore them and d
+
+
+=== OFFSET 0x35350D7 ===
+Long-horizon workflow: For multi-session work, consider keeping concise notes (e.g., `progress.txt`) and a list of pending tests when they will genuinely speed up future progress. Update them only when they add value.The user took the following actions after the last message. ONLY talk about this if it is directly relevant to the user's next request. Otherwise prioritize the actual <user_request>.
+
+<user_actions>
+%s
+</user_actions>What parts of my codebase could be refactored to use this new uti
+
+
+=== OFFSET 0x352D0B8 ===
+Planning cadence: Draft a succinct plan for non-trivial tasks, keep only one step in progress, and refresh the plan after new constraints or discoveries.If you are making multiple edits across a single file, %s. DO NOT try to replace the entire existing content with the new content, this is very expensive.- As you read, build a concise mental model of data flow and responsibilities (what calls what, where state is stored/updated, and how errors are handled).(?m)\b(?i:(CODEUNIT|PAGE|PAGEEXTENSION
+
+
+=== OFFSET 0x3533104 ===
+Testing discipline: Design or update tests before major implementation work, never delete or weaken tests without explicit direction, and share targeted verification commands when you cannot run them.- When searching for text or files, prefer using `rg` or `rg --files` respectively because `rg` is much faster than alternatives like `grep`. (If the `rg` command is not found, then use alternatives.)You normally have the ability to add memories with the %s tool to preserve important information and
+
+
+=== OFFSET 0x353031A ===
+Verification tools: Prefer available automated verification (e.g., Playwright, unit tests) to confirm work. Provide copy-pastable commands for the user when tools are unavailable.Could not successfully apply any edits. You clearly do not have a good grasp on the current contents of the file. Please review the file and make sure the target content is correct - You might be asked to create a new workflow. If so, create a new file in %s%s (use absolute path) following the format described above. Be
+
+
+=== OFFSET 0x353802D ===
+Progress notes: Prefer lightweight workspace artifacts over long chat recaps, but only create new files when they prevent rework and absolutely necessary. Avoid creating repeated .md files or excessive documentation for yourself unless asked by the user.
+|google/protobuf/timestamp.proto||google.protobuf";
+|Timestamp||
+|seconds|| |(|R|seconds||
+|nanos|| |(|R|nanosB||
+|com.google.protobufB|TimestampProtoP|Z2google.golang.org/protobuf/types/known/timestamppb||||||GPB|||Google.Protobuf.WellKnownType
+
+
+=== OFFSET 0x353B908 ===
+Bug fixing discipline: Prefer minimal upstream fixes over downstream workarounds. Identify root cause before implementing. Avoid over-engineering|use single-line changes when sufficient. For specialized codebases, verify bug location carefully. Add regression tests but keep implementation minimal.
+
+Please check the public issue tracker to check whether this problem is
+already tracked. If you cannot find it there, please report the error
+with details by creating a new issue.
+
+If you would rather 
+
+
+=== OFFSET 0x351CD4D ===
+IMPORTANT: You must generate the following arguments first, before any others: [%s]descriptor %s already exists with the same fully-qualified name and const label values[POST /sites/{site_id}/deploys/{deploy_id}/restore][%d] restoreSiteDeploy default  %+v[PUT /sites/{site_id}/traffic_splits/{split_test_id}][%d] updateSplitTest default  %+v^([a-zA-Z0-9_]{1}[a-zA-Z0-9_-]{0,62}){1}(\.[a-zA-Z0-9_]{1}[a-zA-Z0-9_-]{0,62})*[\._]?$message field %q under proto3 optional semantics must be within a single 
+
+
+=== OFFSET 0x33E26C8 ===
+<tool_calling><review_guide><broadcasting>about_codemapsview_code_itemsearch_in_file# Viewing codeknowledge_baseExtensions: %s|%s (%d bytes)<Uri>%s</Uri>
+left unchangedSEARCH_RESULTSCell number %d
+Cell type: %swith number %dmermaidDiagram[> 5 min ago] (no extension)artemis-mediumStop iterationsite not found[^\w@%+=:,./-]invalid paramsserver_version/auth/callback127.0.0.1:8765console-log:%s<|docstring|>
+hidden:repo://does not existis a data filegemini-2.5-procrispy-unicorngemini-3.0-progemini-3.1
+
+
+=== OFFSET 0x33E26D6 ===
+<review_guide><broadcasting>about_codemapsview_code_itemsearch_in_file# Viewing codeknowledge_baseExtensions: %s|%s (%d bytes)<Uri>%s</Uri>
+left unchangedSEARCH_RESULTSCell number %d
+Cell type: %swith number %dmermaidDiagram[> 5 min ago] (no extension)artemis-mediumStop iterationsite not found[^\w@%+=:,./-]invalid paramsserver_version/auth/callback127.0.0.1:8765console-log:%s<|docstring|>
+hidden:repo://does not existis a data filegemini-2.5-procrispy-unicorngemini-3.0-progemini-3.1-proGPT-5.1 (n
+
+
+=== OFFSET 0x33E26E4 ===
+<broadcasting>about_codemapsview_code_itemsearch_in_file# Viewing codeknowledge_baseExtensions: %s|%s (%d bytes)<Uri>%s</Uri>
+left unchangedSEARCH_RESULTSCell number %d
+Cell type: %swith number %dmermaidDiagram[> 5 min ago] (no extension)artemis-mediumStop iterationsite not found[^\w@%+=:,./-]invalid paramsserver_version/auth/callback127.0.0.1:8765console-log:%s<|docstring|>
+hidden:repo://does not existis a data filegemini-2.5-procrispy-unicorngemini-3.0-progemini-3.1-proGPT-5.1 (none)GPT-5.1 (h
+
+
+=== OFFSET 0x34208E0 ===
+<running_commands>NO RULE VIOLATIONS- ID: %s Title: %slifeguard_identity
+
+TotalResults: %dstreaming_durationintentional reject[diff_block_start]Commit created: %sApp Framework: %s
+- Deployed at: %s
+Read terminal '%s'Invoking skill: %sunable to get userclaude-opus-4-6-1m--exclude-standardLC_ALL=en_US.UTF-8Error getting headresource not foundcontent is missing\[(.*?)\]\((.*?)\)@terminal Output:
+CODE_CONTEXT_TYPE_%s:(%d,%d)-(%d,%d)Context from %s %sLLAMA_WITH_SPECIALgpt-4.1-2025-04-14o4-mini-2025-0
+
+
+=== OFFSET 0x33BCF26 ===
+<user_rules>propose_codecompile_coderesolve_taskcodemap_editan @activitystream errorgo_memstats_heap_objectsgc_sys_bytesX-Webkit-CSP%s (%s): %+v-print("Hi")+Hello world### ExamplesStop-Process**/AGENTS.md**/agents.mdcode_trackerto/import.pyImportedItemLocalDirItemautocompletenode is nullconstructorsclass_fields|Methods:
+%s%s (%s):
+%s
+Lineage: %v
+    %s = %v
+Metadata:
+%sNegotiate %s%s return %dstream startdocument endsequence endtail commentnot a number' in struct RCodeSuccessRCodeRefusedcaller e
+
+
+=== OFFSET 0x33F3001 ===
+<memory_system>@@ def greet():**/%s/%s/**/*%sonboarding.jsonlanguage_serverskip this matchcodeium.lineage
+|Docstring: %sParameters: %s
+DIFF_TYPE_COMBO%s (status: %d)UNLEASH-APPNAMEgenerated-%d-%dinvalid integerunsupported KEM0601021504Z0700invalid pointerBelowExactAbovePRIORITY_UPDATEinvalid booleannon-minimal tagunknown Go typeindex %s..%s %oDiacriticalDot;DoubleRightTee;DownLeftVector;GreaterGreater;HorizontalLine;InvisibleComma;InvisibleTimes;LeftDownVector;LeftRightArrow;Leftrightarrow;LessS
+
+
+=== OFFSET 0x347C38C ===
+<communication_guidelines>Caption generation took %v
+TruncatedTotalResults: %dlifeguard_v2_system_promptError checking context: %vModel provider unreachableunexpected step status: %s- Deployment Provider: %s
+step status is unspecifiederror scanning git log: %vfailed to commit files: %sunknown reference type: %sfailed to read config fileFailed to marshal JSON: %vfailed to create transport[MCP] %s failed for %s: %vRedirecting to Windsurf...slices.MaxFunc: empty listMCP Server: %s, Prompt: %snewCod
+
+
+=== OFFSET 0x34472B6 ===
+<markdown_formatting><citation_guidelines>Formatting re-enabledworkspace_informationSearch Directory: %s
+unknown tool name: %sStep is still runningCursor is on line: %dOther open documents:missing action resultCreated file %s %s.%sview file step is nilerror details are nilThe subdomain is: %s
+upsert codemap is nilunknown step type: %serror running git logclaude-opus-4-7-xhighAuto-generated commitPatches are not equalremote %s has no URLs^[a-zA-Z0-9_-]{1,64}$failed to store token[blob uri=%s mime
+
+
+=== OFFSET 0x34472CB ===
+<citation_guidelines>Formatting re-enabledworkspace_informationSearch Directory: %s
+unknown tool name: %sStep is still runningCursor is on line: %dOther open documents:missing action resultCreated file %s %s.%sview file step is nilerror details are nilThe subdomain is: %s
+upsert codemap is nilunknown step type: %serror running git logclaude-opus-4-7-xhighAuto-generated commitPatches are not equalremote %s has no URLs^[a-zA-Z0-9_-]{1,64}$failed to store token[blob uri=%s mime=%s][Explanation Requ
+
+
+=== OFFSET 0x34F507A ===
+workspace_layout workspace="%s">
+%s
+</workspace_layout>LifeguardFindStringConverter: Find is nil in step outputplanner model unreachable due to incomplete envelope: %vRefreshed expired model assignment JWT, retrying requestProposeCodeStringConverter: proposeCode is nil in outputGrepSearchV2StringConverter: GrepSearchV2 is nil in stepClusterQueryStringConverter: ClusterQuery is nil in stepViewCodeItemStringConverter: ViewCodeItem is nil in stepCould not find any match for node path `%v` in the fi
+
+

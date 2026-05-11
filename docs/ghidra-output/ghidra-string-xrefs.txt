@@ -1,0 +1,12 @@
+
+=== STRING 'SEARCH/REPLACE' @ 142a5d00e ===
+Full value: "jsonschema_description:\"Array of diff strings in the SEARCH/REPLACE format. There should be exactly one replacement per diff string.\""
+
+=== STRING 'SafeToAutoRun' @ 1435b40a2 ===
+Full value: " the harness already displays it. Instead, summarize the change made and highlight any important context or next step.Error converting persistent trajectory to chat messages for cumulative prompt: %v. (Number of steps in the persistent trajectory: %d, Max persistent tokens: %d, Document inclusion metadata: %v)Cumulative count of heap allocations whose storage was freed by the garbage collector. Note that this does not include tiny objects as defined by /gc/heap/tiny/allocs:objects, only tiny bl
+
+=== STRING 'SEARCH/REPLACE' @ 1435d1ee2 ===
+Full value: "proto3language: LANGUAGE_CPP\nblock_node_types: \"compound_statement\"\nblock_node_types: \"enumerator_list\"\nblock_node_types: \"field_declaration_list\"\nblock_node_parent_types: \"if_statement\"\nblock_node_parent_types: \"for_statement\"\nblock_node_parent_types: \"while_statement\"\nblock_node_parent_types: \"switch_statement\"\nblock_node_parent_types: \"do_statement\"\nblock_node_parent_types: \"catch\"\nblock_node_parent_types: \"catch_clause\"\nblock_node_parent_types: \"try_statement
+
+=== STRING 'SEARCH/REPLACE' @ 144f7dc41 ===
+Full value: "github.com/Exafunction/Exafunction/exa/cortex/utils.ToJsonSchemaString[go.shape.struct { github.com/Exafunction/Exafunction/exa/cortex/tools.CodeEditSharedArgs; Diff []string \"jsonschema_description:\\\"Array of diff strings in the SEARCH/REPLACE format. There should be exactly one replacement per diff string.\\\"\" }]"

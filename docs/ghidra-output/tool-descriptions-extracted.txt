@@ -1,0 +1,65 @@
+﻿=== TOOL_EDIT_FULL [0x3556B77] ===
+Performs exact string replacements in files.
+
+Usage:
+- You must use your `Read` tool at least once in the conversation before editing. This tool will error if you attempt an edit without reading the file.
+- When editing text from Read tool output, ensure you preserve the exact indentation (tabs/spaces) as it appears AFTER the line number prefix. The line number prefix format is: spaces + line number + tab. Everything after that tab is the actual file content to match. Never include any part of the line number prefix in the old_string or new_string.
+- ALWAYS prefer editing existing files in the codebase. NEVER write new files unless explicitly required.
+- Only use emojis if the user explicitly requests it. Avoid adding emojis to files unless asked.
+- The edit will FAIL if `old_string` is not unique in the file. Either provide a larger string with more surrounding context to make it unique or use `replace_all` to change every instance of `old_string`.
+- Use `replace_all` for replacing and renaming strings across the file. This parameter is useful if you want to rename a variable for instance.
+- The edit will FAIL if `old_string` and `new_string` are identical. This is considered a no-op and will throw an error.
+- Include an `explanation` field to describe the change you are making.||||||||{
+||"$schema": "https://json-schema.org/draft/2020-12/schema",
+||"$id": "https://json-schema.org/draft/2020-12/meta/core",
+||"$vocabulary": {
+|||"https://json-schema.org/draft/2020-12/vocab/co
+
+=== TOOL_RUN_CMD_FULL [0x354C60F] ===
+PROPOSE a command to run on behalf of the user. Operating System: %s. Shell: %s.
+**NEVER PROPOSE A cd COMMAND**.
+If you have this tool, note that you DO have the ability to run commands directly on the USER's system.
+Make sure to specify CommandLine exactly as it should be run in the shell.
+Note that the user will have to approve the command before it is executed. The user may reject it if it is not to their liking.
+The actual command will NOT execute until the user approves it. The user may not approve it immediately.
+If the step is WAITING for user approval, it has NOT started running.
+Commands will be run with PAGER=cat. You may want to limit the length of output for commands that usually rely on paging and may contain very long output (e.g. git log, use git log -n <N>).{
+      "id": "s
+
+=== TOOL_WRITE_FULL [0x353F683] ===
+Use this tool to create new files. The file and any parent directories will be created for you if they do not already exist.
+||Follow these instructions:
+||1. NEVER use this tool to modify or overwrite existing files. Always first confirm that TargetFile does not exist before calling this tool.
+||2. You MUST specify the full TargetFile before any of the code contents.Estimated total CPU time spent performing GC tasks on spare CPU resources that the Go scheduler could not otherwise find a use for. This should be subtracted from the total GC CPU time to obtain a measure of compulsory GC CPU time
+
+=== TOOL_GREP_FULL [0x34C7E15] ===
+A powerful search tool built on ripgrepVibe and replace LLM generation took %vCurrent number of scrapes being served.failed to check if directory exists: %s5. Add error handling for invalid files3. Refactor components to use variables- Never mix monospace and bold markers.Model Override not defined for model %sFailed to create global memory file: %vMemory to be deleted does not exist: %ssource path must end with .cursor/rulesFailed to delete old worktree at %s: %vdocument %s is not in base directory %sAdding CCIs for local directory file %sMigrating cascadeModelExplicitlySet: %vGITHUB_PULL_REQ
+
+=== TOOL_FIND_FULL [0x35452EE] ===
+Search for files and subdirectories within a specified directory using fd.
+Search uses smart case and will ignore gitignored files by default.
+Pattern and Excludes both use the glob format. If you are searching for Extensions, there is no need to specify both Pattern AND Extensions.
+To avoid overwhelming output, the results are capped at 50 matches. Use the various arguments to filter the search scope as needed.
+Results will include the type, size, modification time, and relative path.Estimated total CPU time spent with the application paused by the GC. Even if only one thread is running durin
+
+=== TOOL_SKILL_FULL [0x350B647] ===
+Invoke a skill to get detailed instructions or knowledge for a task.labels in collected metric %s %s are inconsistent with descriptor %scontent compression format not recognized: %s. Valid formats are: %s- If making very large edits (>300 lines), break into smaller edits.- There are logical phases or dependencies where sequencing matters.- Be concise and factual | no filler or conversational commentary.connect> Kerberos not implemented yet. Trying next available scheme.expected SCALAR, SEQUENCE-START, MAPPING-START, or ALIAS, but got %v2695994666715063979466701508701963067355791626002630814351
+
+=== TOOL_SEARCH_SUBAGENT_FULL [0x3553DAF] ===
+search subagent the user refers to as 'Fast Context' that is ideal for exploring the codebase based on a request. This tool invokes a subagent that runs parallel grep and readfile calls over multiple turns to locate line ranges and files which might be relevant to the request. The search term should be a targeted natural language query based on what you are trying to accomplish, like 'Find where authentication requests are handled in the Express routes' or 'Modify the agentic rollout to use the new tokenizer and chat template' or 'Fix the bug where the user gets redirected from the /feed page'
+
+=== TOOL_DEPLOY_FULL [0x35182F4] ===
+Deploy a JavaScript web application to a deployment provider.collected metric named %q collides with previously collected histogram named %qcollected histogram named %q collides with previously collected metric named %qAlways set the `cwd` param when using run_command. Do not use `cd` in commands.Use apply_patch for file edits. Keep changes focused and follow existing style.- Section headers shoul
+
+=== TOOL_BROWSER_FULL [0x34FF376] ===
+Spin up a browser preview for a web server- Do not amend a commit unless explicitly requested to do so.max batch tokens %d, query tokens %d, system prompt tokens %dntlm> Unable to acquire supplied or current user credentials.internal error: unexpected tail comment event (please report)ReverseProxy must have exactly one of Director or Rewrite setlookupUserPrimaryGroup: should be domain account type
+
+=== TOOL_SAVE_MEMORY_FULL [0x3519217] ===
+Save important context relevant to the USER and their task to a memory database.- Never use unicode bullet points. Use the markdown list syntax to format lists.- Multiple grep searches with different regex patterns should run simultaneouslyBe terse and direct. Briefly summarize after clusters of tool calls when needed.If changes are in files you touched, understand them; if unrelated, ignore them.When user asks for 'review', prioritize bugs, risks, regressions, missing tests.- Receive user prompts and context from the IDE, such as files in the workspace.- If the changes are in unrelated files,
+
+=== TOOL_READ_URL_FULL [0x3511152] ===
+Read content from a URL accessible via a web browserRefer to the USER in the second person and yourself in the first person.If you notice unexpected changes you didn't make, STOP and ask the user.Don't use apply_patch for auto-generated changes or mass search-replace.Ask before destructive actions, elevated permissions, or network access.- Don't cram unrelated keywords into a single bullet; split 
+
+=== TOOL_SEMANTIC_FULL [0x3536B31] ===
+Semantic search or retrieve trajectory. Trajectories are one of %s. Returns chunks from the trajectory, scored, sorted, and filtered by relevance. Maximum number of chunks returned is %d. Call this tool when the user @mentions %s. %sApproximate total count of cleanup functions (created by runtime.AddCleanup) executed by the runtime. Subtract /gc/cleanups/queued:cleanups to approximate cleanup queue length. Useful for detecting slow cleanups holding up the queue.If there's something that you think you could help with as a logical next step, concisely ask the user if they want you to do so. Good
+

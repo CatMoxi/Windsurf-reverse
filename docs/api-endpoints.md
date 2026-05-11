@@ -11,6 +11,7 @@
 | Register Server | `https://register.windsurf.com` | 注册/账户管理 |
 | Inference Server | `https://inference.codeium.com` | AI 推理服务 |
 | Website (Auth) | `https://windsurf.com` | OAuth 登录页面 |
+| API Server (Auth1) | `https://server.self-serve.windsurf.com` | Auth1/Devin 账号 API |
 | Feature Flags | `https://unleash.codeium.com/api/` | 实验/功能开关 |
 | EU API | `https://eu.windsurf.com/_route/api_server` | 欧盟区 |
 | FedStart API | `https://windsurf.fedstart.com/_route/api_server` | 政府合规区 |
@@ -620,6 +621,64 @@ message SessionInfo {
   Timestamp updated_at = 10;
 }
 ```
+
+## 已验证的远程可调用端点 (22+)
+
+> 以下端点已通过实际 API 调用验证可工作。
+> Server: `server.self-serve.windsurf.com` (Auth1 账号) 或 `server.codeium.com` (标准账号)
+
+### 核心 AI 功能
+| 端点 | 类型 | 请求 | 返回 | 说明 |
+|------|------|------|------|------|
+| `GetChatMessage` | stream | metadata, chatMessagePrompts[], chatModelUid, requestType=5, cascadeId, promptId | delta_text, delta_tool_calls, stop_reason | 流式聊天+工具+图片+thinking |
+| `GetDevstralStream` | stream | metadata, prompt | delta_text | Devstral 轻量聊天 |
+| `GetEmbeddings` | unary | metadata, texts[], model | embeddings[] | 向量嵌入 (Ada/3-Small/3-Large) |
+| `GetTranscription` | unary | metadata, audioData (WAV) | text | 语音转文字 |
+| `GetWebSearchResults` | unary | metadata, query | results[{url,title,summary}], webSearchUrl | Web搜索 (You.com API) |
+
+### 配置/管理
+| 端点 | 类型 | 请求 | 返回 | 说明 |
+|------|------|------|------|------|
+| `GetCascadeModelConfigs` | unary | metadata | clientModelConfigs[] (115个) | Cascade 模型列表 |
+| `GetCliModelConfigs` | unary | metadata | clientModelConfigs[] (66个) | CLI 模型详情含 credits/tokens |
+| `GetCommandModelConfigs` | unary | metadata | clientModelConfigs[] (8个) | 命令模型 |
+| `GetModelProviders` | unary | (空) | modelProviders[] (8个) | AI 提供商列表 (无需认证) |
+| `GetModelStatuses` | unary | metadata | modelStatusInfos[] | 模型状态 |
+| `GetUserStatus` | unary | metadata | name, email, planInfo, teamConfig | 账号+额度信息 |
+| `CheckUserMessageRateLimit` | unary | metadata, requestType | allowed, resetTime | 限速检查 |
+| `CheckChatCapacity` | unary | metadata | hasCapacity | 容量检查 |
+| `GetTeamOrganizationalControls` | unary | metadata | controls | 团队策略 |
+
+### 功能/工具
+| 端点 | 类型 | 请求 | 返回 | 说明 |
+|------|------|------|------|------|
+| `GetWebDocsOptions` | unary | metadata | options[] (149个) | @docs 文档库 (llms.txt) |
+| `GetLifeguardConfig` | unary | metadata | modes{agent{enabled,model}} | AI 安全配置 |
+| `GenerateSyntheticRule` | unary | metadata, commentBody, fileContent, lineNumber | rule{prompt} | AI 生成代码规则 |
+| `GetWindsurfJSAvailableDeployTargets` | unary | metadata | deployTargets[] | 部署目标 (Netlify) |
+| `GetAvailableCascadePlugins` | unary | metadata | plugins[] | MCP 插件列表 |
+| `GetDefaultWorkflowTemplates` | unary | metadata | templates[] | 工作流模板 |
+| `SupportsRemoteIndexing` | unary | metadata | supportsRemoteIndexing:bool | 远程索引支持 |
+| `Ping` | unary | workDurationMs | latencyMs | 健康检查 |
+
+### 不可远程调用的端点
+| 端点 | 状态 | 原因 |
+|------|------|------|
+| `GetCompletions` | invalid_argument | 需要 LS 构建 FIM prompt |
+| `GetTab` | invalid_argument | 需要 LS 构建 prompt |
+| `GetChatCompletions` | invalid_argument | 缺少必要字段 |
+| `GetStreamingModelAPITextCompletion` | permission_denied | 权限限制 |
+| `GetDeepWiki` | 200 空 | 需要代码库索引 |
+| `GetSystemPromptAndTools` | 404 | 仅 LS 本地 (Go 构建) |
+| `GenerateVibeAndReplaceStreaming` | 404 | 仅 LS 本地 |
+| `ReadUrlContent` | 404 | 仅 LS 本地 |
+| `HandleStreamingCommand/Tab` | 404 | 仅 LS 本地 |
+| `FetchTrajectoryShare` | 401 | 需要特殊 auth token |
+| `ListUserSharedCodeMaps` | 401 | 需要特殊 auth token |
+| `GetExternalModel` | 501 | 未实现 |
+| `GetTeamOidcProviders` | 501 | 未实现 |
+| `AssignArenaModel` | 400 | 需正规 Arena 流程 |
+| `GetMcpRegistryServers` | 404 | 不存在 |
 
 ## API 调用示例
 

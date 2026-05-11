@@ -1,8 +1,9 @@
-# 交接摘要
+# 交接摘要 (2026-05-11 20:30 更新)
 
 ## 当前状态
-Phase 1-5 完成。Language Server + Connect-RPC 服务器 + Proto 编解码 + API 反代理全部实现。
-16个 e2e 测试通过。正在进行真实 API key 验证。
+Phase 1-13 完成。静态+二进制逆向 **~99.5%**。
+- Go Binary: pclntab 116,443符号恢复 + Ghidra 13函数反编译 + System Prompt完整提取
+- 剩余: @exa/windsurf-acp (710KB, 未知), @exa/chat-client (14MB, UI), 服务器端
 
 ## GitHub
 https://github.com/CatMoxi/Windsurf-reverse
