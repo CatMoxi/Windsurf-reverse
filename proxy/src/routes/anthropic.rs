@@ -70,17 +70,19 @@ impl AnthropicContent {
 fn default_max_tokens() -> u32 { 8192 }
 
 /// Map Anthropic model names to Windsurf model UIDs
+/// Unknown names are passed through as-is (allows direct UID use)
+/// Note: self-serve/devin accounts typically only support "gpt-5-5-low"
 fn map_model(model: &str) -> &str {
     match model {
-        m if m.contains("claude-sonnet-4") => "claude-sonnet-4-0520-low",
-        m if m.contains("claude-opus-4") => "claude-opus-4-0-low",
-        m if m.contains("claude-3-5-sonnet") | m.contains("claude-3.5-sonnet") => "claude-3-5-sonnet-low",
-        m if m.contains("claude-3-opus") => "claude-3-opus-low",
-        m if m.contains("gpt-4o") => "gpt-4o-low",
-        m if m.contains("gpt-4") => "gpt-4-turbo-low",
-        m if m.contains("gemini-2.5") => "gemini-2-5-pro-low",
-        m if m.contains("gemini-2.0") => "gemini-2-0-flash-low",
-        _ => "claude-sonnet-4-0520-low", // default
+        m if m.contains("claude-sonnet-4") && !m.ends_with("-low") => "gpt-5-5-low",
+        m if m.contains("claude-opus-4") && !m.ends_with("-low") => "gpt-5-5-low",
+        m if m.contains("claude-3-5-sonnet") | m.contains("claude-3.5-sonnet") => "gpt-5-5-low",
+        m if m.contains("claude-3-opus") => "gpt-5-5-low",
+        m if m.contains("gpt-4o") && !m.ends_with("-low") => "gpt-5-5-low",
+        m if m.contains("gpt-4") && !m.ends_with("-low") => "gpt-5-5-low",
+        m if m.contains("gemini-2.5") && !m.ends_with("-low") => "gpt-5-5-low",
+        m if m.contains("gemini-2.0") && !m.ends_with("-low") => "gpt-5-5-low",
+        _ => model, // pass through as-is (supports direct Windsurf model UIDs)
     }
 }
 

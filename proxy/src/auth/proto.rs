@@ -164,25 +164,25 @@ pub fn build_envelope(flags: u8, data: &[u8]) -> Vec<u8> {
 
 /// Encode Metadata message for Windsurf API calls
 /// message Metadata {
-///   string api_key = 2;
-///   string ide_name = 4;
+///   string ide_name = 1;
+///   string extension_version = 2;
+///   string api_key = 3;
+///   string locale = 4;
 ///   string ide_version = 7;
+///   uint64 request_id = 9;
 ///   string session_id = 10;
-///   uint64 request_id = 13;
-///   string extension_name = 23;
-///   string extension_version = 25;
-///   string locale = 14;
+///   string extension_name = 12;
 /// }
 pub fn encode_metadata(api_key: &str, ide_name: &str, ide_version: &str, ext_version: &str, session_id: &str, request_id: u64) -> Vec<u8> {
     let mut buf = Vec::new();
-    buf.extend(encode_string_field(2, api_key));
-    buf.extend(encode_string_field(4, ide_name));
-    buf.extend(encode_string_field(7, ide_version));
-    buf.extend(encode_string_field(10, session_id));
-    buf.extend(encode_varint_field(13, request_id));
-    buf.extend(encode_string_field(14, "en_US"));
-    buf.extend(encode_string_field(23, "windsurf"));
-    buf.extend(encode_string_field(25, ext_version));
+    buf.extend(encode_string_field(1, ide_name));          // ide_name = 1
+    buf.extend(encode_string_field(2, ext_version));       // extension_version = 2
+    buf.extend(encode_string_field(3, api_key));           // api_key = 3
+    buf.extend(encode_string_field(4, "en_US"));           // locale = 4
+    buf.extend(encode_string_field(7, ide_version));       // ide_version = 7
+    buf.extend(encode_varint_field(9, request_id));        // request_id = 9
+    buf.extend(encode_string_field(10, session_id));       // session_id = 10
+    buf.extend(encode_string_field(12, "windsurf"));       // extension_name = 12
     buf
 }
 
