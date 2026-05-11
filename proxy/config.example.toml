@@ -1,0 +1,42 @@
+# Windsurf Proxy Configuration
+
+[server]
+host = "127.0.0.1"
+port = 8787
+# API key for downstream clients (Claude Code, etc.)
+# If empty, no auth required
+api_key = ""
+
+[upstream]
+# Default upstream Windsurf API server
+url = "https://server.codeium.com"
+# Alternative: "https://server.self-serve.windsurf.com" for Devin accounts
+# Custom gateway URL (if using your own relay)
+# url = "https://your-custom-gateway.com"
+
+# Timeout in seconds
+timeout = 120
+
+[upstream.metadata]
+ide_name = "windsurf"
+ide_version = "2.5.0"
+extension_version = "2.5.0"
+
+[accounts]
+# Rotation strategy: "round_robin", "least_used", "random"
+rotation = "round_robin"
+# Health check interval in seconds (0 = disabled)
+health_check_interval = 300
+
+[prompt]
+# Strip Windsurf native system prompts
+# "full" = remove all Windsurf prompts, "partial" = keep some, "none" = passthrough
+strip_mode = "full"
+
+[database]
+# SQLite database path
+path = "data/proxy.db"
+
+[logging]
+# "debug", "info", "warn", "error"
+level = "info"
