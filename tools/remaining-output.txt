@@ -1,0 +1,315 @@
+﻿
+============================================================
+FILE: vs/workbench/api/node/extensionHostProcess.js (2.24 MB)
+
+--- Proposed APIs (26) ---
+  windsurfAcp
+  windsurfAnnotations
+  windsurfAudio
+  windsurfAuth
+  windsurfCascade
+  windsurfCommandPopup
+  windsurfDebug
+  windsurfDevContainers
+  windsurfDiffZone
+  windsurfEditorCommandPopup
+  windsurfEditorNudge
+  windsurfExtensionManager
+  windsurfExtensionMetadata
+  windsurfFiles
+  windsurfGenerateCommitMessageButton
+  windsurfInlineCompletions
+  windsurfLanguageServer
+  windsurfMarkers
+  windsurfMcp
+  windsurfProductEducation
+  windsurfSettings
+  windsurfSideHint
+  windsurfStatusBar
+  windsurfTabToJump
+  windsurfTerminalCommandPopup
+  windsurfUndoRedo
+
+--- URLs (35) ---
+  https://app.beta.devin.ai
+  https://app.devin.ai
+  https://beta.devinenterprise.com
+  https://cdn.windsurf.com/sourcemaps/a65d6c4e1fd335336d7a0b601099811667e184ca/core/vs/workbench/api/node/extensionHostProcess.js.map
+  https://marketplace.windsurf.com
+  https://marketplace.windsurf.com/vscode/gallery
+  https://marketplace.windsurf.com/vscode/item
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfAcp.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfAnnotations.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfAudio.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfAuth.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfCascade.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfCommandPopup.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfDebug.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfDevContainers.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfDiffZone.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfEditorCommandPopup.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfEditorNudge.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfExtensionManager.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfExtensionMetadata.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfFiles.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfGenerateCommitMessageButton.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfInlineCompletions.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfLanguageServer.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfMarkers.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfMcp.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfProductEducation.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfSettings.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfSideHint.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfStatusBar.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfTabToJump.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfTerminalCommandPopup.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfUndoRedo.d.ts
+  https://windsurf-next.codeium.com
+  https://windsurf.com/redirect/windsurf/feedback
+
+--- Extension Host APIs (1) ---
+  registerWindsurfDevContainerContext
+
+--- Services (2) ---
+  windsurfFileSystemService
+  windsurfUserSettingsService
+
+============================================================
+FILE: vs/workbench/api/worker/extensionHostWorkerMain.js (2.00 MB)
+
+--- Proposed APIs (26) ---
+  windsurfAcp
+  windsurfAnnotations
+  windsurfAudio
+  windsurfAuth
+  windsurfCascade
+  windsurfCommandPopup
+  windsurfDebug
+  windsurfDevContainers
+  windsurfDiffZone
+  windsurfEditorCommandPopup
+  windsurfEditorNudge
+  windsurfExtensionManager
+  windsurfExtensionMetadata
+  windsurfFiles
+  windsurfGenerateCommitMessageButton
+  windsurfInlineCompletions
+  windsurfLanguageServer
+  windsurfMarkers
+  windsurfMcp
+  windsurfProductEducation
+  windsurfSettings
+  windsurfSideHint
+  windsurfStatusBar
+  windsurfTabToJump
+  windsurfTerminalCommandPopup
+  windsurfUndoRedo
+
+--- URLs (35) ---
+  https://app.beta.devin.ai
+  https://app.devin.ai
+  https://beta.devinenterprise.com
+  https://cdn.windsurf.com/sourcemaps/a65d6c4e1fd335336d7a0b601099811667e184ca/core/vs/workbench/api/worker/extensionHostWorkerMain.js.map
+  https://marketplace.windsurf.com
+  https://marketplace.windsurf.com/vscode/gallery
+  https://marketplace.windsurf.com/vscode/item
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfAcp.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfAnnotations.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfAudio.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfAuth.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfCascade.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfCommandPopup.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfDebug.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfDevContainers.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfDiffZone.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfEditorCommandPopup.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfEditorNudge.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfExtensionManager.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfExtensionMetadata.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfFiles.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfGenerateCommitMessageButton.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfInlineCompletions.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfLanguageServer.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfMarkers.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfMcp.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfProductEducation.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfSettings.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfSideHint.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfStatusBar.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfTabToJump.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfTerminalCommandPopup.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfUndoRedo.d.ts
+  https://windsurf-next.codeium.com
+  https://windsurf.com/redirect/windsurf/feedback
+
+--- Extension Host APIs (1) ---
+  registerWindsurfDevContainerContext
+
+--- Services (2) ---
+  windsurfFileSystemService
+  windsurfUserSettingsService
+
+============================================================
+FILE: vs/code/electron-utility/sharedProcess/sharedProcessMain.js (1.02 MB)
+
+--- Proposed APIs (26) ---
+  windsurfAcp
+  windsurfAnnotations
+  windsurfAudio
+  windsurfAuth
+  windsurfCascade
+  windsurfCommandPopup
+  windsurfDebug
+  windsurfDevContainers
+  windsurfDiffZone
+  windsurfEditorCommandPopup
+  windsurfEditorNudge
+  windsurfExtensionManager
+  windsurfExtensionMetadata
+  windsurfFiles
+  windsurfGenerateCommitMessageButton
+  windsurfInlineCompletions
+  windsurfLanguageServer
+  windsurfMarkers
+  windsurfMcp
+  windsurfProductEducation
+  windsurfSettings
+  windsurfSideHint
+  windsurfStatusBar
+  windsurfTabToJump
+  windsurfTerminalCommandPopup
+  windsurfUndoRedo
+
+--- URLs (38) ---
+  https://app.beta.devin.ai
+  https://app.devin.ai
+  https://beta.devinenterprise.com
+  https://cdn.windsurf.com/sourcemaps/a65d6c4e1fd335336d7a0b601099811667e184ca/core/vs/code/electron-utility/sharedProcess/sharedProcessMain.js.map
+  https://marketplace.windsurf.com
+  https://marketplace.windsurf.com/vscode/gallery
+  https://marketplace.windsurf.com/vscode/item
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfAcp.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfAnnotations.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfAudio.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfAuth.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfCascade.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfCommandPopup.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfDebug.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfDevContainers.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfDiffZone.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfEditorCommandPopup.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfEditorNudge.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfExtensionManager.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfExtensionMetadata.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfFiles.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfGenerateCommitMessageButton.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfInlineCompletions.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfLanguageServer.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfMarkers.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfMcp.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfProductEducation.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfSettings.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfSideHint.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfStatusBar.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfTabToJump.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfTerminalCommandPopup.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfUndoRedo.d.ts
+  https://windsurf-next.codeium.com
+  https://windsurf-telemetry.codeium.com/ping
+  https://windsurf-telemetry.codeium.com/telemetry
+  https://windsurf.com/redirect/windsurf/feedback
+  https://windsurf.com/redirect/windsurf/settings
+
+============================================================
+FILE: vs/code/node/cliProcessMain.js (0.71 MB)
+
+--- Proposed APIs (26) ---
+  windsurfAcp
+  windsurfAnnotations
+  windsurfAudio
+  windsurfAuth
+  windsurfCascade
+  windsurfCommandPopup
+  windsurfDebug
+  windsurfDevContainers
+  windsurfDiffZone
+  windsurfEditorCommandPopup
+  windsurfEditorNudge
+  windsurfExtensionManager
+  windsurfExtensionMetadata
+  windsurfFiles
+  windsurfGenerateCommitMessageButton
+  windsurfInlineCompletions
+  windsurfLanguageServer
+  windsurfMarkers
+  windsurfMcp
+  windsurfProductEducation
+  windsurfSettings
+  windsurfSideHint
+  windsurfStatusBar
+  windsurfTabToJump
+  windsurfTerminalCommandPopup
+  windsurfUndoRedo
+
+--- URLs (38) ---
+  https://app.beta.devin.ai
+  https://app.devin.ai
+  https://beta.devinenterprise.com
+  https://cdn.windsurf.com/sourcemaps/a65d6c4e1fd335336d7a0b601099811667e184ca/core/vs/code/node/cliProcessMain.js.map
+  https://marketplace.windsurf.com
+  https://marketplace.windsurf.com/vscode/gallery
+  https://marketplace.windsurf.com/vscode/item
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfAcp.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfAnnotations.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfAudio.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfAuth.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfCascade.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfCommandPopup.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfDebug.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfDevContainers.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfDiffZone.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfEditorCommandPopup.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfEditorNudge.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfExtensionManager.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfExtensionMetadata.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfFiles.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfGenerateCommitMessageButton.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfInlineCompletions.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfLanguageServer.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfMarkers.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfMcp.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfProductEducation.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfSettings.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfSideHint.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfStatusBar.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfTabToJump.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfTerminalCommandPopup.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfUndoRedo.d.ts
+  https://windsurf-next.codeium.com
+  https://windsurf-telemetry.codeium.com/ping
+  https://windsurf-telemetry.codeium.com/telemetry
+  https://windsurf.com/redirect/windsurf/feedback
+  https://windsurf.com/redirect/windsurf/settings
+
+============================================================
+FILE: vs/platform/terminal/node/ptyHostMain.js (0.37 MB)
+
+--- URLs (9) ---
+  https://app.beta.devin.ai
+  https://app.devin.ai
+  https://beta.devinenterprise.com
+  https://cdn.windsurf.com/sourcemaps/a65d6c4e1fd335336d7a0b601099811667e184ca/core/vs/platform/terminal/node/ptyHostMain.js.map
+  https://marketplace.windsurf.com
+  https://marketplace.windsurf.com/vscode/gallery
+  https://marketplace.windsurf.com/vscode/item
+  https://windsurf-next.codeium.com
+  https://windsurf.com/redirect/windsurf/feedback
+
+============================================================
+FILE: vscode-dts/vscode.d.ts
+
+--- windsurf references (1) ---
+  windsurfAdditionalSelectedCompletionInfo
+
+============================================================
+Proposed DTS files with 'windsurf': 0

@@ -21,6 +21,7 @@ const logger = createLogger({
 logger.info('Windsurf Language Server (reverse-engineered)');
 logger.info(`API Server: ${args.api_server_url || 'https://server.codeium.com'}`);
 logger.info(`Extension Server Port: ${args.extension_server_port || 'not set'}`);
+logger.info(`Impersonate Tier: ${args.impersonate_tier || process.env.IMPERSONATE_TIER || 'TEAMS_TIER_DEVIN_PRO'}`);
 
 // Read initial metadata from stdin (matches real LS behavior)
 // The extension writes a serialized Metadata protobuf to stdin at startup

@@ -23,6 +23,10 @@ class LanguageServerService {
     this.apiKey = args.api_key || '';
     this.csrfToken = args.csrf_token || '';
     
+    // Impersonate tier for rate limit bypass
+    // Set via --impersonate_tier CLI arg or IMPERSONATE_TIER env var
+    this.impersonateTier = args.impersonate_tier || process.env.IMPERSONATE_TIER || 'TEAMS_TIER_DEVIN_PRO';
+    
     // API key pool for multi-account rotation
     this.keyPool = keyPool || null;
     
@@ -224,10 +228,9 @@ class LanguageServerService {
     this.log.debug(`GetCompletions: lang=${lang}`);
     if (this.api && this.apiKey) {
       this.api.connect();
-      // Ensure metadata has api_key for the gRPC call
+      // Inject metadata (api_key + impersonate_tier)
       const apiReq = camelToSnake(request);
-      if (!apiReq.metadata) apiReq.metadata = {};
-      apiReq.metadata.api_key = this.apiKey;
+      this._injectMetadata(apiReq, this.apiKey);
       this.api.call('GetCompletions', apiReq)
         .then(response => {
           // Convert snake_case response to camelCase for proto-codec encoding
@@ -646,12 +649,14 @@ class LanguageServerService {
       chatMessagePrompts.push(prompt);
     }
     
-    return {
-      metadata: { api_key: this._getApiKey() },
+    const apiReq = {
+      metadata: {},
       chat_message_prompts: chatMessagePrompts,
       chat_model_name: request.chatModelName || request.chat_model_name || '',
       chat_model_uid: request.chatModelUid || request.chat_model_uid || '',
     };
+    this._injectMetadata(apiReq, this._getApiKey());
+    return apiReq;
   }
 
   /** Server-streaming: RawGetChatMessage */
@@ -1772,6 +1777,19 @@ class LanguageServerService {
   // ========================
 
   /**
+   * Inject api_key and impersonate_tier into request metadata.
+   * This is the central point for Pro tier impersonation.
+   */
+  _injectMetadata(apiReq, key) {
+    if (!apiReq.metadata) apiReq.metadata = {};
+    apiReq.metadata.api_key = key;
+    if (this.impersonateTier) {
+      apiReq.metadata.impersonate_tier = this.impersonateTier;
+    }
+    return apiReq;
+  }
+
+  /**
    * Forward a server-streaming call to the API server
    * Pipes the upstream stream directly back to the client.
    */
@@ -1792,8 +1810,7 @@ class LanguageServerService {
     try {
       this.api.connect();
       const apiReq = camelToSnake(request);
-      if (!apiReq.metadata) apiReq.metadata = {};
-      apiReq.metadata.api_key = key;
+      this._injectMetadata(apiReq, key);
       
       const upstream = this.api.stream(method, apiReq);
       
@@ -1841,8 +1858,7 @@ class LanguageServerService {
 
     this.api.connect();
     const apiReq = camelToSnake(request);
-    if (!apiReq.metadata) apiReq.metadata = {};
-    apiReq.metadata.api_key = key;
+    this._injectMetadata(apiReq, key);
     
     this.api.call(method, apiReq)
       .then(response => {

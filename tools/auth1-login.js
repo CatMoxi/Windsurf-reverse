@@ -4,7 +4,9 @@
  * 
  * Flow (reverse-engineered from avw project):
  * 1. WindsurfPostAuth(auth1_token) → session_token + account_id + primary_org_id
- * 2. GetCurrentUser(session_token + devin headers) → api_key + email + plan
+ * 2. GetCurrentUser(session_token + devin headers) → email + plan (synthetic api_key)
+ * 3. GetOneTimeAuthToken(session_token) → one_time_auth_token
+ * 4. RegisterUser(one_time_auth_token) → real api_key (UUID, works with server.codeium.com)
  * 
  * Usage:
  *   node tools/auth1-login.js auth1_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -19,6 +21,8 @@ const path = require('path');
 
 const POST_AUTH_URL = 'https://web-backend.windsurf.com/exa.seat_management_pb.SeatManagementService/WindsurfPostAuth';
 const GET_CURRENT_USER_URL = 'https://web-backend.windsurf.com/exa.seat_management_pb.SeatManagementService/GetCurrentUser';
+const GET_ONE_TIME_AUTH_TOKEN_URL = 'https://web-backend.windsurf.com/exa.seat_management_pb.SeatManagementService/GetOneTimeAuthToken';
+const REGISTER_USER_URL = 'https://register.windsurf.com/exa.seat_management_pb.SeatManagementService/RegisterUser';
 
 // ==================== Protobuf helpers ====================
 
@@ -332,8 +336,64 @@ function collectAllStrings(data, depth = 0) {
 
 // ==================== Main ====================
 
+function buildDevinHeaders(auth) {
+  const headers = { 'x-auth-token': auth.sessionToken };
+  if (auth.sessionToken.startsWith('devin-session-token$')) {
+    headers['x-devin-session-token'] = auth.sessionToken;
+    if (auth.accountId) headers['x-devin-account-id'] = auth.accountId;
+    if (auth.auth1Token) headers['x-devin-auth1-token'] = auth.auth1Token;
+    if (auth.primaryOrgId) headers['x-devin-primary-org-id'] = auth.primaryOrgId;
+  }
+  return headers;
+}
+
+/**
+ * Step 3: GetOneTimeAuthToken - Exchange session_token for a one-time auth token.
+ */
+async function getOneTimeAuthToken(auth) {
+  const body = encodeStringField(1, auth.sessionToken);
+  const headers = buildDevinHeaders(auth);
+  
+  const res = await httpsPost(GET_ONE_TIME_AUTH_TOKEN_URL, body, headers);
+  if (res.status !== 200) {
+    throw new Error(`GetOneTimeAuthToken HTTP ${res.status}: ${res.body.toString('utf-8').substring(0, 200)}`);
+  }
+  
+  const data = stripEnvelope(res.body);
+  const fields = parseProtoFields(data);
+  // Response: field 1 (string) = one_time_auth_token
+  const token = fields[1]?.[0]?.str || '';
+  if (!token) throw new Error('GetOneTimeAuthToken: no auth_token in response');
+  return token;
+}
+
+/**
+ * Step 4: RegisterUser - Exchange one_time_auth_token for a real API key.
+ * This calls register.windsurf.com (not web-backend).
+ */
+async function registerUser(oneTimeToken) {
+  // RegisterUserRequest: field 1 (string) = firebase_id_token (one_time_auth_token)
+  const body = encodeStringField(1, oneTimeToken);
+  
+  const res = await httpsPost(REGISTER_USER_URL, body, {
+    'connect-protocol-version': '1',
+  });
+  if (res.status !== 200) {
+    throw new Error(`RegisterUser HTTP ${res.status}: ${res.body.toString('utf-8').substring(0, 200)}`);
+  }
+  
+  const data = stripEnvelope(res.body);
+  const fields = parseProtoFields(data);
+  // RegisterUserResponse: field 1 = api_key, field 2 = name, field 3 = api_server_url
+  return {
+    apiKey: fields[1]?.[0]?.str || '',
+    name: fields[2]?.[0]?.str || '',
+    apiServerUrl: fields[3]?.[0]?.str || '',
+  };
+}
+
 async function loginWithAuth1(auth1Token, orgId) {
-  console.log(`  [1/2] WindsurfPostAuth...`);
+  console.log(`  [1/4] WindsurfPostAuth...`);
   const postAuth = await windsurfPostAuth(auth1Token, orgId || '');
   console.log(`    session_token: ${postAuth.sessionToken.substring(0, 30)}...`);
   console.log(`    account_id: ${postAuth.accountId || '(none)'}`);
@@ -345,7 +405,7 @@ async function loginWithAuth1(auth1Token, orgId) {
     console.log(`    ⚠ auth1_token rotated to: ${postAuth.auth1Token.substring(0, 20)}...`);
   }
   
-  console.log(`  [2/2] GetCurrentUser...`);
+  console.log(`  [2/4] GetCurrentUser...`);
   const auth = {
     sessionToken: postAuth.sessionToken,
     accountId: postAuth.accountId,
@@ -353,22 +413,30 @@ async function loginWithAuth1(auth1Token, orgId) {
     primaryOrgId: postAuth.primaryOrgId,
   };
   const user = await getCurrentUser(auth);
-  
-  console.log(`    api_key: ${user.apiKey || '(not found)'}`);
   console.log(`    email: ${user.email || '(not found)'}`);
   if (user.name) console.log(`    name: ${user.name}`);
   if (user.planName) console.log(`    plan: ${user.planName}`);
+  
+  console.log(`  [3/4] GetOneTimeAuthToken...`);
+  const oneTimeToken = await getOneTimeAuthToken(auth);
+  console.log(`    one_time_token: ${oneTimeToken.substring(0, 20)}...`);
+  
+  console.log(`  [4/4] RegisterUser...`);
+  const reg = await registerUser(oneTimeToken);
+  console.log(`    api_key: ${reg.apiKey || '(not found)'}`);
+  if (reg.apiServerUrl) console.log(`    api_server: ${reg.apiServerUrl}`);
   
   return {
     auth1Token: postAuth.auth1Token || auth1Token,
     sessionToken: postAuth.sessionToken,
     accountId: postAuth.accountId,
     primaryOrgId: postAuth.primaryOrgId,
-    apiKey: user.apiKey,
+    apiKey: reg.apiKey,  // Real API key (UUID format)
+    syntheticApiKey: user.apiKey,  // web-backend only key
     email: user.email,
-    name: user.name,
+    name: user.name || reg.name,
     planName: user.planName,
-    raw: user.raw,
+    apiServerUrl: reg.apiServerUrl,
   };
 }
 
@@ -416,19 +484,49 @@ async function main() {
     
     // Summary
     const ok = results.filter(r => r.apiKey);
-    console.log(`\n  Results: ${ok.length}/${results.length} successful`);
+    const failed = results.filter(r => r.error);
+    console.log(`\n  ═══════════════════════════════════`);
+    console.log(`  Results: ${ok.length} success / ${failed.length} failed / ${results.length} total`);
     if (ok.length > 0) {
-      console.log('\n  API Keys:');
+      console.log('\n  Credentials:');
       for (const r of ok) {
-        console.log(`    ${r.email || '?'}: ${r.apiKey}`);
+        console.log(`    ${r.email || '?'} (${r.planName || '?'}):`);
+        console.log(`      api_key: ${r.apiKey.substring(0, 30)}...`);
+        console.log(`      api_server: ${r.apiServerUrl || 'unknown'}`);
+      }
+    }
+    if (failed.length > 0) {
+      console.log('\n  Failed:');
+      for (const r of failed) {
+        console.log(`    ${r.auth1Token.substring(0, 12)}...: ${r.error}`);
       }
     }
     
     if (save && ok.length > 0) {
+      // Save as JSON credentials file for reverse-proxy use
+      const credsPath = path.join(__dirname, '..', 'credentials.json');
+      const creds = ok.map(r => ({
+        email: r.email,
+        name: r.name,
+        plan: r.planName,
+        apiKey: r.apiKey,
+        apiServerUrl: r.apiServerUrl,
+        auth1Token: r.auth1Token,
+        sessionToken: r.sessionToken,
+        accountId: r.accountId,
+        primaryOrgId: r.primaryOrgId,
+      }));
+      fs.writeFileSync(credsPath, JSON.stringify(creds, null, 2));
+      console.log(`\n  ✓ Saved ${ok.length} credential(s) to credentials.json`);
+      
+      // Also save first key to .env for quick use
       const envPath = path.join(__dirname, '..', '.env');
-      const envContent = `CODEIUM_API_KEY=${ok[0].apiKey}\n`;
-      fs.writeFileSync(envPath, envContent);
-      console.log(`\n  Saved first API key to .env`);
+      const envLines = [
+        `CODEIUM_API_KEY=${ok[0].apiKey}`,
+        `CODEIUM_API_SERVER=${ok[0].apiServerUrl || 'https://server.self-serve.windsurf.com'}`,
+      ];
+      fs.writeFileSync(envPath, envLines.join('\n') + '\n');
+      console.log(`  ✓ Saved first key to .env`);
     }
     
   } else {
@@ -442,9 +540,29 @@ async function main() {
       const result = await loginWithAuth1(token);
       
       if (result.apiKey && save) {
+        // Save credentials.json
+        const credsPath = path.join(__dirname, '..', 'credentials.json');
+        const creds = [{
+          email: result.email,
+          name: result.name,
+          plan: result.planName,
+          apiKey: result.apiKey,
+          apiServerUrl: result.apiServerUrl,
+          auth1Token: result.auth1Token,
+          sessionToken: result.sessionToken,
+          accountId: result.accountId,
+          primaryOrgId: result.primaryOrgId,
+        }];
+        fs.writeFileSync(credsPath, JSON.stringify(creds, null, 2));
+        
+        // Save .env
         const envPath = path.join(__dirname, '..', '.env');
-        fs.writeFileSync(envPath, `CODEIUM_API_KEY=${result.apiKey}\n`);
-        console.log(`\n  Saved to .env`);
+        const envLines = [
+          `CODEIUM_API_KEY=${result.apiKey}`,
+          `CODEIUM_API_SERVER=${result.apiServerUrl || 'https://server.self-serve.windsurf.com'}`,
+        ];
+        fs.writeFileSync(envPath, envLines.join('\n') + '\n');
+        console.log(`\n  ✓ Saved to credentials.json + .env`);
       }
       
       console.log('\n  ✓ Done');

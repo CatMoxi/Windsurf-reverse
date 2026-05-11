@@ -1,0 +1,323 @@
+﻿
+============================================================
+FILE: main.js (1.11 MB)
+============================================================
+
+--- WINDSURF/DEVIN URLs (41) ---
+  https://app.beta.devin.ai
+  https://app.devin.ai
+  https://beta.devinenterprise.com
+  https://cdn.windsurf.com/sourcemaps/a65d6c4e1fd335336d7a0b601099811667e184ca/core/main.js.map
+  https://codeium-staging-exafunction.vercel.app
+  https://codeium.com/windsurf/update_linux
+  https://marketplace.windsurf.com
+  https://marketplace.windsurf.com/vscode/gallery
+  https://marketplace.windsurf.com/vscode/item
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfAcp.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfAnnotations.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfAudio.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfAuth.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfCascade.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfCommandPopup.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfDebug.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfDevContainers.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfDiffZone.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfEditorCommandPopup.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfEditorNudge.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfExtensionManager.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfExtensionMetadata.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfFiles.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfGenerateCommitMessageButton.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfInlineCompletions.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfLanguageServer.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfMarkers.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfMcp.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfProductEducation.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfSettings.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfSideHint.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfStatusBar.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfTabToJump.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfTerminalCommandPopup.d.ts
+  https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.proposed.windsurfUndoRedo.d.ts
+  https://staging.itsdev.in
+  https://windsurf-next.codeium.com
+  https://windsurf.com
+  https://windsurf.com/redirect/windsurf/feedback?referrer=extension
+  https://windsurf.com/redirect/windsurf/settings
+  https://windsurf.com/terms-of-service-individual
+
+--- Windsurf Strings (22) ---
+  "windsurf"
+  "windsurf-insiders"
+  "windsurf-next"
+  "windsurf-server"
+  "windsurf-server-insiders"
+  "windsurf-server-next"
+  "windsurf-tunnel"
+  "windsurf-tunnelservice"
+  "windsurf.languageServerMainService"
+  "windsurf.languageServerService"
+  "windsurf.lsGroupsState"
+  "windsurf.portalUrl"
+  "windsurf.prioritized.chat.open"
+  "windsurf.serviceUrl"
+  "windsurf.windowGroupsState"
+  "windsurfAppIcon"
+  "windsurfKeybindingMainService"
+  "windsurfKeybindings"
+  "windsurfLanguageServer"
+  "windsurfWindowsMainManager"
+  "windsurfWindowsManager"
+  "windsurfnext"
+
+--- Devin References (9) ---
+  "),canFailSilently:!0})),!await z.exists(e))throw new Error(h(2220,null,e));return{symlinkSources:l,binaryPath:e}}async installDevinCli(e){let t=M?"
+  "devin"
+  "devin-insiders"
+  "devin-next"
+  "https://*.devinenterprise.com"
+  "https://app.beta.devin.ai"
+  "https://app.devin.ai"
+  "https://beta.devinenterprise.com"
+  "npm install && npm run prepare-exa && bash build_windsurf/download_fd_and_devin_cli.sh"
+
+--- Product Config (33804 chars) ---
+  Config fields (234): WINDSURF_KEYS_START_HERE_______________, zendeskTicketApiKey, enableTelemetry, aiConfig, ariaKey, aiGeneratedWorkspaceTrust, title, checkboxText, trustOption, dontTrustOption, startupTrustRequestLearnMore, https, extensionUntrustedWorkspaceSupport, override, chatParticipantRegistry, commandPaletteSuggestedCommandIds, commonlyUsedSettings, defaultChatAgent, extensionId, chatExtensionId, chatExtensionOutputId, chatExtensionOutputExtensionStateCommand, documentationUrl, termsStatementUrl, privacyStatementUrl, skusDocumentationUrl, publicCodeMatchesUrl, manageSettingsUrl, managePlanUrl, manageOverageUrl, upgradePlanUrl, signUpUrl, provider, default, id, name, enterprise, google, apple, providerExtensionId, providerUriSetting, providerScopes, read, user, entitlementUrl, entitlementSignupLimitedUrl, chatQuotaExceededContext, completionsQuotaExceededContext, walkthroughCommand, completionsMenuCommand, completionsRefreshTokenCommand, chatRefreshTokenCommand, generateCommitMessageCommand, resolveMergeConflictsCommand, completionsAdvancedSetting, completionsEnablementSetting, nextEditSuggestionsSetting, tokenEntitlementUrl, mcpRegistryDataUrl, configBasedExtensionTips, git, configPath, configName, recommendations, contentPattern, maven, important, isExtensionPack, whenNotInstalled, gradle, configScheme, crashReporter, productName, companyName, enabledTelemetryLevels, error, usage, exeBasedExtensionTips, az, friendlyName, windowsPath, azd, heroku, mongo, serverless, func, mysql, postgres, sqlcmd, now, docker, kubectl, ng, p4, hg, svn, subl, atom, brackets, notepadplusplus, vi, mvn, cordova, gcloud, skaffold, minikube, podman, wsl, extensionAllowedBadgeProviders, extensionAllowedBadgeProvidersRegex, extensionEnabledApiProposals, extensionKeywords, md, js, jsx, es6, html, ts, tsx, css, scss, txt, php, php3, php4, ph3, ph4, xml, py, pyc, pyd, pyo, pyw, pyz, java, class, jar, c, m, mm, cpp, cc, cxx, hh, hpp, h, sql, sh, bash, zsh, cs, csproj, sln, go, sty, tex, ps, ps1, rs, rslib, hs, lhs, scm, ss, clj, cljs, cljc, edn, erl, hrl, scala, sc, pl, pm, t, pod, groovy, swift, rb, rbw, jl, f, for, f90, f95, coffee, litcoffee, yaml, yml, dart, json, extensionKind, extensionPointExtensionKind, typescriptServerPlugins, extensionSyncedKeys, extensionVirtualWorkspacesSupport, extensionRecommendations, onFileOpen, pathGlob, languages, whenInstalled, keymapExtensionTips, languageExtensionTips, linkProtectionTrustedDomains, showTelemetryOptOut, trustedExtensionAuthAccess, github, microsoft, windsurf_auth, verifiedExtensionPublishers, codeium, extensionPublisherDisplayNameOverrides, trustedExtensionPublishers, trustedExtensionProtocolHandlers, webExtensionTips, tunnelServerQualities, stable, serverApplicationName, next, insider, quality, codeiumVersion, codeiumCommit, windsurfVersion, win32ContextMenu, x64, clsid, arm64, updateUrl, version, commit, date, 06T04, 34
+  version: 1.110.1-next
+  commit: a65d6c4e1fd335336d7a0b601099811667e184ca
+  date: 2026-05-06T04:34:19.061Z
+  quality: next
+  codeiumVersion: 1.48.2
+  windsurfVersion: 2.2.1017+next.a65d6c4e1f
+  updateUrl: https://windsurf-next.codeium.com
+  zendeskTicketApiKey: 1d83db0009861157cacd3279a927855f53279e48c84bd26d2ba48d241699773d
+  tunnelServerQualities: tunnelServerQualities:{stable:{serverApplicationName:"windsurf-server"},next:{serverApplicationName:"windsurf-server-next"},insider:{serverApplicationName:"windsurf-server-insiders"}
+
+  Trusted domains (37):
+    "https://marketplace.windsurf.com"
+    "https://*.codeium.com"
+    "https://*.windsurf.com"
+    "https://windsurf.com"
+    "https://codeium-staging-exafunction.vercel.app"
+    "https://staging.itsdev.in"
+    "https://app.devin.ai"
+    "https://app.beta.devin.ai"
+    "https://*.devinenterprise.com"
+    "https://beta.devinenterprise.com"
+    "https://windsurf.com"
+    "https://windsurf-next.codeium.com"
+
+--- VSCode IPC Channels (36) ---
+  "vscode:accessibilitySupportChanged"
+  "vscode:addRemoveFolders"
+  "vscode:configureAllowedUNCHost"
+  "vscode:contextmenu"
+  "vscode:createPtyHostMessageChannel"
+  "vscode:createPtyHostMessageChannelResult"
+  "vscode:createSharedProcessChannelConnection"
+  "vscode:createSharedProcessChannelConnectionResult"
+  "vscode:createSharedProcessRawConnection"
+  "vscode:createSharedProcessRawConnectionResult"
+  "vscode:disablePromptForProtocolHandling"
+  "vscode:disconnect"
+  "vscode:enterFullScreen"
+  "vscode:fetchShellEnv"
+  "vscode:getDiagnosticInfo"
+  "vscode:hello"
+  "vscode:leaveFullScreen"
+  "vscode:message"
+  "vscode:notifyZoomLevel"
+  "vscode:onBeforeUnload"
+  "vscode:onCloseContextMenu"
+  "vscode:onWillUnload"
+  "vscode:openChatSession"
+  "vscode:openDevTools"
+  "vscode:openFiles"
+  "vscode:openProxyAuthenticationDialog"
+  "vscode:registerAuxiliaryWindow"
+  "vscode:reloadWindow"
+  "vscode:reportSharedProcessCrash"
+  "vscode:runAction"
+  "vscode:runKeybinding"
+  "vscode:showArgvParseWarning"
+  "vscode:showInfoMessage"
+  "vscode:showResolveShellEnvError"
+  "vscode:showTranslatedBuildWarning"
+  "vscode:toggleDevTools"
+
+--- Windsurf Services (5) ---
+  windsurfExtensionManager
+  windsurfKeybindingMainService
+  windsurfLanguageServer
+  windsurfWindowsMainManager
+  windsurfWindowsManager
+
+--- Key Patterns ---
+  installDevinCli: 1 occurrences
+  multi_tenant_mode: 2 occurrences
+  languageServerMainService: 3 occurrences
+  WindowGroupsState: 12 occurrences
+  lsGroupsState: 5 occurrences
+  cascade-browser: 1 occurrences
+  portalUrl: 1 occurrences
+  serviceUrl: 1 occurrences
+  marketplace: 3 occurrences
+
+--- Codeium Extension IDs (2) ---
+  "codeium.windsurf"
+  "codeium.windsurfpyright"
+
+--- installDevinCli Code ---
+installDevinCli(e){let t=M?"devin.exe":"devin",n=It(this.environmentMainService.appRoot,"extensions","windsurf","devin","bin"),i=It(n,t);
+if(!await z.exists(i))throw new Error(h(2214,null,this.productService.nameShort));
+let a=TE(this.productService.applicationName);
+if(M){let l=It(process.env.LOCALAPPDATA||It(oI(),"AppData","Local"),"devin","bin");
+await ki.promises.mkdir(l,{recursive:!0});
+let c=It(l,`${a}.exe`);
+if(await z.exists(c))throw new Error(h(2213,null,c));
+await ki.promises.copyFile(i,c),await Bu(l,this.productService.nameShort)}else{let l=It(oI(),".local","bin");
+await ki.promises.mkdir(l,{recursive:!0});
+let c=It(l,a);
+if(await z.exists(c))throw new Error(h(2213,null,c));
+await ki.promises.symlink(i,c),await Bu(l,this.productService.nameShort)}}async showMessageBox(e,t){let n=this.windo
+
+--- Win32 CLSIDs ---
+  75947501-1980-4697-99E8-2544FC3BE4B8
+  62AD3AC1-4E9B-4345-859A-BC17C4CF7497
+
+============================================================
+FILE: cli.js (0.25 MB)
+============================================================
+
+--- WINDSURF/DEVIN URLs (13) ---
+  https://app.beta.devin.ai
+  https://app.devin.ai
+  https://beta.devinenterprise.com
+  https://cdn.windsurf.com/sourcemaps/a65d6c4e1fd335336d7a0b601099811667e184ca/core/cli.js.map
+  https://codeium-staging-exafunction.vercel.app
+  https://marketplace.windsurf.com
+  https://marketplace.windsurf.com/vscode/gallery
+  https://marketplace.windsurf.com/vscode/item
+  https://staging.itsdev.in
+  https://windsurf-next.codeium.com
+  https://windsurf.com
+  https://windsurf.com/redirect/windsurf/feedback?referrer=extension
+  https://windsurf.com/terms-of-service-individual
+
+--- Windsurf Strings (9) ---
+  "windsurf"
+  "windsurf-next"
+  "windsurf-server"
+  "windsurf-server-insiders"
+  "windsurf-server-next"
+  "windsurf-tunnel"
+  "windsurf-tunnelservice"
+  "windsurf.prioritized.chat.open"
+  "windsurfnext"
+
+--- Devin References (5) ---
+  "https://*.devinenterprise.com"
+  "https://app.beta.devin.ai"
+  "https://app.devin.ai"
+  "https://beta.devinenterprise.com"
+  "npm install && npm run prepare-exa && bash build_windsurf/download_fd_and_devin_cli.sh"
+
+--- VSCode IPC Channels (0) ---
+
+--- Windsurf Services (0) ---
+
+--- Key Patterns ---
+  installDevinCli: 0 occurrences
+  multi_tenant_mode: 0 occurrences
+  languageServerMainService: 0 occurrences
+  WindowGroupsState: 0 occurrences
+  lsGroupsState: 0 occurrences
+  cascade-browser: 0 occurrences
+  portalUrl: 0 occurrences
+  serviceUrl: 0 occurrences
+  marketplace: 3 occurrences
+
+--- Codeium Extension IDs (2) ---
+  "codeium.windsurf"
+  "codeium.windsurfpyright"
+
+--- Win32 CLSIDs ---
+  75947501-1980-4697-99E8-2544FC3BE4B8
+  62AD3AC1-4E9B-4345-859A-BC17C4CF7497
+
+============================================================
+NLS MESSAGES: 17289 total strings
+============================================================
+
+--- "Cascade" (16) ---
+  Cascade
+  Open Cascade Conversation
+  Cascade in new tab
+  Code with Cascade
+  Execute {0} to generate code, execute {1} to use Cascade. Start typing to dismiss.
+  [[{0}]] to generate code, [[{1}]] to use Cascade. Start typing to dismiss.
+  Fix with Cascade
+  Whether a terminal managed by Cascade is focused.
+  Whether a terminal in the Cascade panel is focused.
+  This read-only terminal is managed by Cascade
+  Code with Cascade
+  Code with Cascade
+  Cascade
+  Cascade Editor
+  Add Codemap to Cascade
+
+--- "Devin" (13) ---
+  Unable to find the Devin for Terminal binary. It may not be bundled with this version of {0}.
+  Devin logo icon
+  Put Devin to sleep
+  Whether the cascade editor tab is for a Devin Cloud session that is currently awake (has an external URL and is not sleeping)
+  Open Devin's desktop
+  Devin Cloud Resource
+  Toggle Developer Tools (Devin Review)
+  Please contact your Windsurf team administrator to enable installing Devin for Terminal via Windsurf
+  Devin for Terminal successfully installed. Run `{0}` in a new terminal to use it.
+  Failed to install Devin for Terminal: {0}
+  Please sign in to Windsurf before installing Devin for Terminal.
+  Install Devin for Terminal
+
+--- "Windsurf" (120) ---
+  Windsurf
+  Quality type of Windsurf
+  Unable to install extension '{0}' as it is not compatible with Windsurf '{1}'.
+  Please restart Windsurf before reinstalling {0}.
+  Windsurf Console
+  To manage how {0} stores code snippet telemetry, visit your [Windsurf Profile Settings]({1}).
+
+  Background color for deleted text in Windsurf inline completions.
+  Windsurf black color used for custom UI elements.
+  Windsurf sea color used for custom UI elements.
+  Windsurf sea shade color used for custom UI elements.
+  Windsurf sea tint color used for custom UI elements.
+  Enable to download and install new Windsurf versions in the background on Windows.
+  Configure whether you receive automatic updates. Requires a restart after change. The updates are fetched from a Windsurf online service.
+  Windsurf Account
+  Windsurf Usage
+
+--- "Vibe" (1) ---
+  Vibe and Replace
+
+--- "Codemap" (13) ---
+  Share Codemap
+  Add Codemap to Cascade
+  Codemap Editor
+  Codemaps
+  Generate Codemap
+  Generate Codemap from Cascade
+  Generate Codemap from Navigation History
+  Check if Codemaps is Enabled
+  Load Codemap
+  &&Codemaps
+  Open Codemap by ID
+  Open Codemap Chat
+  Open Codemaps
+
+--- "Worktree" (4) ---
+  Workspace (Worktree)
+  Worktree
+  Open Worktree in Integrated Terminal
+  Open Worktree in New Window

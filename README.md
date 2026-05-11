@@ -91,6 +91,12 @@ node index.js --connect_mode --run_child --csrf_token YOUR_TOKEN \
 
 # 标准 gRPC 模式（测试用）
 node index.js --port 50051 --api_key YOUR_KEY
+
+# 使用 impersonate_tier 绕过 Trial 限速
+node index.js --connect_mode --api_key YOUR_KEY \
+  --impersonate_tier TEAMS_TIER_DEVIN_PRO
+# 或通过环境变量:
+IMPERSONATE_TIER=TEAMS_TIER_DEVIN_PRO node index.js --connect_mode --api_key YOUR_KEY
 ```
 
 ### 5. 独立认证工具
@@ -125,7 +131,18 @@ node interceptor.js --target-port 42100 --listen-port 3100 --verbose
 PORT=3000                              # 反代理监听端口
 API_SERVER_URL=https://server.codeium.com  # 上游 API
 WINDSURF_CSRF_TOKEN=xxx                # CSRF token
+IMPERSONATE_TIER=TEAMS_TIER_DEVIN_PRO  # 伪装 Pro 层级 (绕过限速)
 ```
+
+### 有效的 TeamsTier 值
+| 枚举值 | 数值 | 说明 |
+|--------|------|------|
+| `TEAMS_TIER_DEVIN_FREE` | - | 免费 |
+| `TEAMS_TIER_DEVIN_TRIAL` | 20 | 试用 (默认) |
+| `TEAMS_TIER_DEVIN_PRO` | 16 | **Pro (推荐)** |
+| `TEAMS_TIER_DEVIN_MAX` | 17 | Max |
+| `TEAMS_TIER_DEVIN_TEAMS` | - | 团队 |
+| `TEAMS_TIER_DEVIN_ENTERPRISE` | 12 | 企业 |
 
 ## 逆向成果
 
@@ -137,6 +154,9 @@ WINDSURF_CSRF_TOKEN=xxx                # CSRF token
 | Language Server 复刻 | 172 RPC handlers, Connect-RPC + gRPC 双模式 |
 | 启动协议 | 完整 CLI 参数、stdin metadata、CSRF、命名管道 |
 | 端到端测试 | 9 tests all passing (CSRF/unary/streaming) |
+| 深度接口分析 | 128 章节, 12,215 行, 静态分析 ~97% |
+| Go 二进制分析 | 175 内部包, 53 Go 模块, 14+ URLs |
+| Pro 伪装 | impersonate_tier 注入, TEAMS_TIER_DEVIN_PRO |
 
 ## 约束
 
