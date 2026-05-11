@@ -1,6 +1,7 @@
 mod config;
 mod db;
 mod account;
+mod auth;
 mod prompt;
 mod upstream;
 mod routes;
@@ -85,6 +86,10 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/accounts/import", post(routes::admin::import_accounts))
         .route("/api/health-check", post(routes::admin::health_check))
         .route("/api/models", get(routes::admin::list_models))
+        // Auth API
+        .route("/api/auth/auth1", post(routes::admin::login_auth1))
+        .route("/api/auth/oauth", post(routes::admin::login_oauth))
+        .route("/api/auth/login-url", get(routes::admin::get_login_url))
         // Web UI (embedded React)
         .fallback(serve_web_ui)
         .layer(cors)

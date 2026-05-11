@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { BarChart3, Users, Upload, RefreshCw, Trash2, Plus, Activity, Server, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { BarChart3, Users, Upload, RefreshCw, Trash2, Plus, Activity, Server, AlertCircle, CheckCircle2, LogIn, ExternalLink, Key } from 'lucide-react'
 
 interface Stats {
   total_requests: number
@@ -22,7 +22,7 @@ interface Account {
   created_at: string
 }
 
-type Tab = 'dashboard' | 'accounts' | 'import'
+type Tab = 'dashboard' | 'accounts' | 'import' | 'login'
 
 const API = ''
 
@@ -89,6 +89,7 @@ function App() {
               ['dashboard', BarChart3, 'Dashboard'],
               ['accounts', Users, 'Accounts'],
               ['import', Upload, 'Import'],
+              ['login', LogIn, 'Login'],
             ] as const).map(([id, Icon, label]) => (
               <button
                 key={id}
@@ -119,6 +120,7 @@ function App() {
           />
         )}
         {tab === 'import' && <Import onImported={() => { fetchAccounts(); fetchStats() }} showToast={showToast} />}
+        {tab === 'login' && <Login onLoggedIn={() => { fetchAccounts(); fetchStats() }} showToast={showToast} />}
       </main>
     </div>
   )
@@ -395,6 +397,129 @@ key2,c@d.com`}
           className="mt-4 flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm text-white font-medium transition-colors disabled:opacity-50">
           <Upload size={16} /> {loading ? 'Importing...' : 'Import'}
         </button>
+      </div>
+    </div>
+  )
+}
+
+function Login({ onLoggedIn, showToast }: { onLoggedIn: () => void; showToast: (msg: string, type: 'ok' | 'err') => void }) {
+  const [auth1Token, setAuth1Token] = useState('')
+  const [oauthToken, setOauthToken] = useState('')
+  const [loginUrl, setLoginUrl] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const fetchLoginUrl = async () => {
+    try {
+      const r = await fetch(`${API}/api/auth/login-url`)
+      const d = await r.json()
+      setLoginUrl(d.url)
+    } catch {
+      showToast('Failed to get login URL', 'err')
+    }
+  }
+
+  useEffect(() => { fetchLoginUrl() }, [])
+
+  const doAuth1Login = async () => {
+    if (!auth1Token.trim()) return
+    setLoading(true)
+    try {
+      const r = await fetch(`${API}/api/auth/auth1`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ auth1_token: auth1Token.trim() }),
+      })
+      const d = await r.json()
+      if (r.ok) {
+        showToast(`Auth1 login success: ${d.name || 'account added'}`, 'ok')
+        setAuth1Token('')
+        onLoggedIn()
+      } else {
+        showToast(d.error || 'Auth1 login failed', 'err')
+      }
+    } catch {
+      showToast('Network error', 'err')
+    }
+    setLoading(false)
+  }
+
+  const doOAuthLogin = async () => {
+    if (!oauthToken.trim()) return
+    setLoading(true)
+    try {
+      const r = await fetch(`${API}/api/auth/oauth`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ access_token: oauthToken.trim() }),
+      })
+      const d = await r.json()
+      if (r.ok) {
+        showToast(`OAuth login success: ${d.name || 'account added'}`, 'ok')
+        setOauthToken('')
+        onLoggedIn()
+      } else {
+        showToast(d.error || 'OAuth login failed', 'err')
+      }
+    } catch {
+      showToast('Network error', 'err')
+    }
+    setLoading(false)
+  }
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold text-white mb-6">Login</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Auth1 Login */}
+        <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Key className="text-amber-400" size={20} />
+            <h3 className="text-lg font-semibold text-white">Auth1 Token Login</h3>
+          </div>
+          <p className="text-sm text-gray-400 mb-4">
+            For Devin/Windsurf accounts. Paste your <code className="bg-gray-800 px-1.5 py-0.5 rounded text-amber-300">auth1_</code> token.
+          </p>
+          <p className="text-xs text-gray-500 mb-3">
+            Flow: auth1_token → PostAuth → GetOTT → RegisterUser → api_key
+          </p>
+          <input
+            value={auth1Token}
+            onChange={e => setAuth1Token(e.target.value)}
+            placeholder="auth1_xxxxxxxxxxxxxxxx"
+            className="w-full bg-gray-950 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 font-mono focus:outline-none focus:border-amber-500 mb-3"
+          />
+          <button onClick={doAuth1Login} disabled={loading || !auth1Token.trim()}
+            className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-500 rounded-lg text-sm text-white transition-colors disabled:opacity-50">
+            <LogIn size={14} /> {loading ? 'Logging in...' : 'Login with Auth1'}
+          </button>
+        </div>
+
+        {/* OAuth2 Login */}
+        <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <ExternalLink className="text-blue-400" size={20} />
+            <h3 className="text-lg font-semibold text-white">OAuth2 Browser Login</h3>
+          </div>
+          <p className="text-sm text-gray-400 mb-4">
+            Standard Windsurf login via browser. Click the link below, login, then paste the <code className="bg-gray-800 px-1.5 py-0.5 rounded text-blue-300">access_token</code>.
+          </p>
+          {loginUrl && (
+            <a href={loginUrl} target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-900/50 border border-blue-700/50 hover:bg-blue-800/50 rounded-lg text-sm text-blue-300 transition-colors mb-4">
+              <ExternalLink size={14} /> Open Windsurf Login Page
+            </a>
+          )}
+          <input
+            value={oauthToken}
+            onChange={e => setOauthToken(e.target.value)}
+            placeholder="Paste access_token from redirect..."
+            className="w-full bg-gray-950 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 font-mono focus:outline-none focus:border-blue-500 mb-3"
+          />
+          <button onClick={doOAuthLogin} disabled={loading || !oauthToken.trim()}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm text-white transition-colors disabled:opacity-50">
+            <LogIn size={14} /> {loading ? 'Logging in...' : 'Login with OAuth'}
+          </button>
+        </div>
       </div>
     </div>
   )
